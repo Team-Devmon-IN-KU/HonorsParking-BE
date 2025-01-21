@@ -11,7 +11,7 @@ import org.example.honorsparkingbe.domain.enums.Status;
 @Table( name = "unpaidAmount")
 
 
-public class UnpaidAmount {
+public class UnpaidAmountEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,11 +19,16 @@ public class UnpaidAmount {
 
     @ManyToOne
     @JoinColumn(name = "memberId", referencedColumnName = "id")
-    private Member member; // 미납 금액을 가진 회원
+    private MemberEntity memberEntity; // 미납 금액을 가진 회원
 
     private int amount; // 미납 금액
 
     @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private Status status; // 미납금 상태 (paid, unpaid)
+
+    @ManyToOne
+    @JoinColumn(name = "parkingHistoryId", referencedColumnName = "id", nullable = false)
+    private ParkingHistoryEntity parkingHistoryEntity; // 미납 금액과 연결된 주차 기록
 }
 

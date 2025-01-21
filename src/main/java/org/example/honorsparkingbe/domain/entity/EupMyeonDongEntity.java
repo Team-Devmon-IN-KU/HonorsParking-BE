@@ -4,18 +4,17 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-@Table( name = "city")
-
-
 @Getter
 @Setter
 @Entity
-public class City {
+@Table( name = "eupMyeonDong")
+
+
+public class EupMyeonDongEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id; // 고유 ID
 
-    @Column(unique = true, nullable = false)
-    private String name; // 시도 이름
+    private String name; // 읍면동 이름
 }

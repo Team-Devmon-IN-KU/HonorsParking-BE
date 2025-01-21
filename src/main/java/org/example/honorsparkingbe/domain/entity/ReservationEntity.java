@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table( name = "reservation")
 
 
-public class Reservation {
+public class ReservationEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,15 +21,15 @@ public class Reservation {
 
     @ManyToOne
     @JoinColumn(name = "parkingZoneId", referencedColumnName = "id")
-    private ParkingZone parkingZone; // 예약한 주차장
+    private ParkingZoneEntity parkingZoneEntity; // 예약한 주차장
 
     @ManyToOne
     @JoinColumn(name = "memberId", referencedColumnName = "id")
-    private Member member; // 예약한 회원
+    private MemberEntity memberEntity; // 예약한 회원
 
     @ManyToOne
     @JoinColumn(name = "carId", referencedColumnName = "id")
-    private Car car; // 예약한 차량
+    private CarEntity carEntity; // 예약한 차량
 
     @Enumerated(EnumType.STRING)
     private ReservationState reservationState; // 예약 상태 (NOSHOW, ENTER, CANCELED)

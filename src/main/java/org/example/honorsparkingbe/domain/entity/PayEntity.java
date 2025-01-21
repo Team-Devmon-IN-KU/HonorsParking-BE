@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table( name ="pay")
 
 
-public class Pay {
+public class PayEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -24,5 +24,5 @@ public class Pay {
 
     @ManyToOne
     @JoinColumn(name = "memberId", referencedColumnName = "id")
-    private Member member; // 결제한 회원
+    private MemberEntity memberEntity; // 결제한 회원
 }

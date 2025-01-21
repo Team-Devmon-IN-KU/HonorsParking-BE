@@ -7,7 +7,7 @@ import org.example.honorsparkingbe.domain.enums.MemberRole;
 @Entity
 @Table( name = "member")
 
-public class Member {
+public class MemberEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -15,7 +15,7 @@ public class Member {
 
     @OneToOne
     @JoinColumn(name = "carId", unique = true)
-    private Car car;
+    private CarEntity carEntity;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

@@ -11,7 +11,7 @@ import lombok.Setter;
 @Table( name = "card")
 
 
-public class Card {
+public class CardEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -19,7 +19,7 @@ public class Card {
 
     @OneToOne
     @JoinColumn(name = "memberId", referencedColumnName = "id", unique = true)
-    private Member member; // Member와 1:1 관계
+    private MemberEntity memberEntity; // Member와 1:1 관계
 
     private String token; // PG사 결제에 필요한 토큰
 

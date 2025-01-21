@@ -11,11 +11,10 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table( name = "parkingZone")
 
 
-public class ParkingZone {
+public class ParkingZoneEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -33,17 +32,17 @@ public class ParkingZone {
     // City 연관 관계
     @ManyToOne
     @JoinColumn(name = "cityId", nullable = false)
-    private City city;
+    private CityEntity cityEntity;
 
     // District 연관 관계
     @ManyToOne
     @JoinColumn(name = "districtId", nullable = false)
-    private District district;
+    private DistrictEntity districtEntity;
 
     // EupMyeonDong 연관 관계
     @ManyToOne
     @JoinColumn(name = "eupMyeonDongId", nullable = false)
-    private EupMyeonDong eupMyeonDong;
+    private EupMyeonDongEntity eupMyeonDongEntity;
 
     // 전기차 주차 공간 수
     private Integer electricCarSpaceCount;

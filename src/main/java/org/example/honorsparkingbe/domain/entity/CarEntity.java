@@ -5,18 +5,16 @@ import lombok.*;
 import org.example.honorsparkingbe.domain.enums.CarType;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table( name = "car")
 
 
-public class Car {
+public class CarEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

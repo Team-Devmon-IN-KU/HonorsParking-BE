@@ -8,11 +8,10 @@ import lombok.*;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-@Table( name = "favoriteParkingZone")
+@Table( name = "specialCondition")
 
 
-public class FavoriteParkingZone {
+public class SpecialConditionEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,10 +20,16 @@ public class FavoriteParkingZone {
     // ParkingZone 연관 관계
     @OneToOne
     @JoinColumn(name = "parkingZoneId", unique = true, nullable = false)
-    private ParkingZone parkingZone;
+    private ParkingZoneEntity parkingZoneEntity;
 
-    // Member 연관 관계
+    // Car 연관 관계
     @OneToOne
-    @JoinColumn(name = "memberId", unique = true, nullable = false)
-    private Member member;
+    @JoinColumn(name = "carId", unique = true, nullable = false)
+    private CarEntity carEntity;
+
+    // 조건 이름
+    private String conditionName;
+
+    // 할인율 (예: "10%")
+    private String discountRate;
 }

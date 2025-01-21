@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Table( name = "inquiry")
 
 
-public class Inquiry {
+public class InquiryEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,7 @@ public class Inquiry {
 
     @ManyToOne
     @JoinColumn(name = "memberId", referencedColumnName = "id")
-    private Member member; // 문의한 회원
+    private MemberEntity memberEntity; // 문의한 회원
 
     private String chattingContent; // 문의 메시지 내용
 

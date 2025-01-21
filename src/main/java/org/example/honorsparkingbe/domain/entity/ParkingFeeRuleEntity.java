@@ -9,11 +9,10 @@ import org.example.honorsparkingbe.domain.enums.CarType;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
 @Table( name = "parkingFeeRule")
 
 
-public class ParkingFeeRule {
+public class ParkingFeeRuleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,7 +21,7 @@ public class ParkingFeeRule {
     // ParkingZone 연관 관계
     @OneToOne
     @JoinColumn(name = "parkingZoneId", unique = true, nullable = false)
-    private ParkingZone parkingZone;
+    private ParkingZoneEntity parkingZoneEntity;
 
     // 차량 타입 (Enum)
     @Enumerated(EnumType.STRING)

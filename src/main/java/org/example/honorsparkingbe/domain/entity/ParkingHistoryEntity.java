@@ -13,7 +13,7 @@ import java.time.LocalDateTime;
 @Table( name = "parkingHistory")
 
 
-public class ParkingHistory {
+public class ParkingHistoryEntity {
 
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,19 +21,19 @@ public class ParkingHistory {
 
         @OneToOne
         @JoinColumn(name = "carId", unique = true, nullable = false)
-        private Car car;
+        private CarEntity carEntity;
 
         @OneToOne
         @JoinColumn(name = "memberId", unique = true, nullable = false)
-        private Member member;
+        private MemberEntity memberEntity;
 
         @ManyToOne
         @JoinColumn(name = "parkingZoneId", unique = true, nullable = false)
-        private ParkingZone parkingZone;
+        private ParkingZoneEntity parkingZoneEntity;
 
         @OneToOne
         @JoinColumn(name = "cardId", unique = true)
-        private Card card;
+        private CardEntity cardEntity;
 
         @Column(nullable = false)
         private LocalDateTime entranceTime;
@@ -46,5 +46,5 @@ public class ParkingHistory {
 
         @ManyToOne
         @JoinColumn(name = "payId", nullable = false)
-        private Pay pay;
+        private PayEntity payEntity;
 }
