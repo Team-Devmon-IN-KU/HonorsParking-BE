@@ -63,7 +63,7 @@ jobs:
         run: docker tag honorsparking-be ${{ steps.login-ecr.outputs.registry }}/honorsparking-be:latest
 
       - name: ECR에 Docker 이미지 Push하기
-        run: docker push ${{ steps.login-ecr.outputs.registry }}/honorsparking-server:latest
+        run: docker push ${{ steps.login-ecr.outputs.registry }}/honorsparking-be:latest
 
       - name: SSH(원격 접속)로 EC2에 접속하기
         uses: appleboy/ssh-action@v1.0.3
