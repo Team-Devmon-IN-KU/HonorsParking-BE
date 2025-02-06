@@ -22,13 +22,20 @@ class CustomUserDetailsServiceTest {
 
     private MemberRepository memberRepository;
     private CustomUserDetailsService userDetailsService;
-
+    private CustomUserDetails customUserDetails;
     @BeforeEach
     void setUp() {
         // Mock UserRepository 생성
         memberRepository = Mockito.mock(MemberRepository.class);
         // CustomUserDetailsService 초기화
         userDetailsService = new CustomUserDetailsService(memberRepository);
+
+        MemberEntity customUser = new MemberEntity();
+        customUser.setAuthId("authId");
+        customUser.setPassword("password123");
+        customUser.setRole(MemberRole.ROLE_USER);
+        customUser.setId(1L);
+        customUserDetails = new CustomUserDetails(customUser);
     }
 
     @Test
@@ -39,6 +46,7 @@ class CustomUserDetailsServiceTest {
         mockUser.setAuthId(authId);
         mockUser.setPassword("password123");
         mockUser.setRole(MemberRole.ROLE_USER);
+        mockUser.setId(1L);
 
         when(memberRepository.findByAuthId(authId)).thenReturn(mockUser);
 
@@ -67,5 +75,24 @@ class CustomUserDetailsServiceTest {
 
         assertEquals("User not found with authId: " + authId, exception.getMessage());
         verify(memberRepository, times(1)).findByAuthId(authId);
+    }
+
+    @Test
+    void getId_ShouldReturnMemberId_WhenMemberExists() {
+        // When
+        Long memberId = customUserDetails.getId();
+
+        // Then
+        assertNotNull(memberId);
+        assertEquals(1L, memberId);
+    }
+
+    @Test
+    void getId_ShouldThrowNullPointerException_WhenMemberIsNull() {
+        // Given
+        CustomUserDetails userDetailsWithNullMember = new CustomUserDetails(null);
+
+        // When & Then
+        assertThrows(NullPointerException.class, userDetailsWithNullMember::getId);
     }
 }
