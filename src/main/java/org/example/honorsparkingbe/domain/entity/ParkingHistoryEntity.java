@@ -1,17 +1,16 @@
 package org.example.honorsparkingbe.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.example.honorsparkingbe.domain.enums.PaymentType;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
+@Getter @Setter
 @Entity
 @Table( name = "parkingHistory")
-
+@NoArgsConstructor @AllArgsConstructor
+@Builder
 
 public class ParkingHistoryEntity {
 
@@ -19,19 +18,19 @@ public class ParkingHistoryEntity {
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         private Long id;
 
-        @OneToOne
-        @JoinColumn(name = "carId", unique = true, nullable = false)
+        @ManyToOne
+        @JoinColumn(name = "carId", nullable = false)
         private CarEntity carEntity;
 
-        @OneToOne
-        @JoinColumn(name = "memberId", unique = true, nullable = false)
+        @ManyToOne
+        @JoinColumn(name = "memberId", nullable = false)
         private MemberEntity memberEntity;
 
         @ManyToOne
-        @JoinColumn(name = "parkingZoneId", unique = true, nullable = false)
+        @JoinColumn(name = "parkingZoneId", nullable = false)
         private ParkingZoneEntity parkingZoneEntity;
 
-        @OneToOne
+        @ManyToOne
         @JoinColumn(name = "cardId", unique = true)
         private CardEntity cardEntity;
 
@@ -47,4 +46,6 @@ public class ParkingHistoryEntity {
         @ManyToOne
         @JoinColumn(name = "payId", nullable = false)
         private PayEntity payEntity;
+
+        private LocalDateTime deleteAt;
 }

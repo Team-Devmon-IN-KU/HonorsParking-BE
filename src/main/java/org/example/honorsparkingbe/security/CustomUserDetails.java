@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class CustomUserDetails implements UserDetails {
+    private static final long serialVersionUID = 1L;
 
     private final MemberEntity memberEntity;
 

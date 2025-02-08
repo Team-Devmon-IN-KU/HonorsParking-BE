@@ -1,4 +1,4 @@
-package org.example.honorsparkingbe.util;
+package org.example.honorsparkingbe.util.converter;
 
 import org.example.honorsparkingbe.domain.entity.ParkingFeeRuleEntity;
 import org.example.honorsparkingbe.dto.ParkingFeeRuleDTO;

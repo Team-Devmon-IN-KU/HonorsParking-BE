@@ -1,16 +1,15 @@
 package org.example.honorsparkingbe.domain.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Getter
-@Setter
 @Entity
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@Builder
 @Table( name ="pay")
-
 
 public class PayEntity {
 
