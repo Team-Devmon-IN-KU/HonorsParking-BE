@@ -18,8 +18,8 @@ services:
       MYSQL_PASSWORD: 1234
     ports:
       - "3306:3306"
-
-
+    volumes:
+      - mysql-data:/var/lib/mysql
 
 #  backend:
 #    container_name: honorsParking
@@ -33,3 +33,5 @@ services:
 #      redis-host: redis
 #      redis-port: 6379
 
+volumes:
+  mysql-data:
