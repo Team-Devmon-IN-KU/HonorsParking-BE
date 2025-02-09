@@ -1,56 +1,68 @@
 package org.example.honorsparkingbe.domain.entity;
 
-import jakarta.persistence.*;
-import lombok.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Table;
+import java.io.Serializable;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.example.honorsparkingbe.domain.enums.LoginPlatform;
 import org.example.honorsparkingbe.domain.enums.MemberRole;
 
-import java.io.Serializable;
-
 @Entity
-@Table( name = "member")
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor
+@Table(name = "member")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 @Builder
 
 public class MemberEntity implements Serializable {
-    private static final long serialVersionUID = 1L;
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+  private static final long serialVersionUID = 1L;
 
-    @OneToOne
-    @JoinColumn(name = "carId", unique = true)
-    private CarEntity carEntity;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-    @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
-    private LoginPlatform loginPlatform;
+  @OneToOne
+  @JoinColumn(name = "carId", unique = true)
+  private CarEntity carEntity;
 
-    @Enumerated(EnumType.STRING)
-    // @Column(nullable = false)
-    private MemberRole role;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private LoginPlatform loginPlatform;
 
-    // @Column(nullable = false, length = 60)
-    private String userName;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private MemberRole role;
 
-    // @Column(nullable = false, unique = true)
-    private String authId;
+  private String userName;
 
-    // @Column(nullable = false)
-    private String password;
+  @Column(nullable = false, unique = true)
+  private String authId;
 
-    // @Column(nullable = false, length = 15)
-    private String phoneNumber;
+  @Column(nullable = false)
+  private String password;
 
-    // @Column(nullable = false, unique = true)
-    private String email;
+  @Column(nullable = false, length = 12)
+  private String phoneNumber;
 
-    // @Column(nullable = false)
-    private int birthdayYear; // 생년 (정수형)
+  private String email;
 
-    // @Column(nullable = false, length = 4)
-    private String birthday; // 생일 (문자열, "MMDD" 형태로 저장할 수 있음)
+  private int birthdayYear; // 생년 (정수형)
+
+  @Column(length = 4)
+  private String birthday; // 생일 (문자열, "MMDD" 형태로 저장할 수 있음)
 
 }
