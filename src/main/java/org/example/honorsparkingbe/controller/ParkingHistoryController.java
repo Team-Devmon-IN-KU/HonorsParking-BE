@@ -2,10 +2,7 @@ package org.example.honorsparkingbe.controller;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.connector.Response;
-import org.example.honorsparkingbe.dto.error.ErrorResponse;
 import org.example.honorsparkingbe.dto.request.ParingHistoryDeloteRequest;
-import org.example.honorsparkingbe.dto.response.ParingHistoryDeleteResponse;
 import org.example.honorsparkingbe.service.ParkingHistoryService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,21 +15,14 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class ParkingHistoryController {
 
-    private final ParkingHistoryService parkingHistoryService;
+  private final ParkingHistoryService parkingHistoryService;
 
-    @DeleteMapping
-    public ResponseEntity<?> deleteParkingHistory(
-            @Valid @RequestBody ParingHistoryDeloteRequest request){
-        try{
+  @DeleteMapping
+  public ResponseEntity<?> deleteParkingHistory(
+      @Valid @RequestBody ParingHistoryDeloteRequest request) {
 
-        }catch (IllegalArgumentException e){
-            return ResponseEntity
-                    .badRequest()
-                    .body(ErrorResponse.builder()
-                            .code(Response.SC_BAD_REQUEST)
-                            .message(e.getMessage())
-                    .build());
-        }
-        return ResponseEntity.ok(parkingHistoryService.softDeleteParkingHistories(request.getHistoryIDList()));
-    }
+    throw new RuntimeException("sdsdsd");
+//    return ResponseEntity.ok(
+//        parkingHistoryService.softDeleteParkingHistories(request.getHistoryIDList()));
+  }
 }
