@@ -59,7 +59,6 @@ public class JoinService {
     data.setRole(MemberRole.ROLE_USER);
     data.setCarEntity(carEntity);
 
-    System.out.println("sdssdd");
     System.out.println(bCryptPasswordEncoder.encode(joinDTO.getAccountPassword()));
 
     // 저장
