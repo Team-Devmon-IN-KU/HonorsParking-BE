@@ -5,6 +5,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -14,9 +15,12 @@ import org.example.honorsparkingbe.Slf4jRestControllerAdvice;
 import org.example.honorsparkingbe.controller.FavoriteParkingZoneController;
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.enums.MemberRole;
-import org.example.honorsparkingbe.dto.ToggleFavoriteParkingZoneDTO;
-import org.example.honorsparkingbe.dto.request.ToggleFavoriteParkingZoneRequest;
-import org.example.honorsparkingbe.dto.response.ToggleFavoriteParkingZoneResponse;
+import org.example.honorsparkingbe.dto.AddFavoriteParkingZoneDTO;
+import org.example.honorsparkingbe.dto.DeleteFavoriteParkingZoneDTO;
+import org.example.honorsparkingbe.dto.request.AddFavoriteParkingZoneRequest;
+import org.example.honorsparkingbe.dto.request.DeleteFavoriteParkingZoneRequest;
+import org.example.honorsparkingbe.dto.response.AddFavoriteParkingZoneResponse;
+import org.example.honorsparkingbe.dto.response.DeleteFavoriteParkingZoneResponse;
 import org.example.honorsparkingbe.security.CustomUserDetails;
 import org.example.honorsparkingbe.service.FavoriteParkingZoneService;
 import org.junit.jupiter.api.BeforeEach;
@@ -77,26 +81,49 @@ public class FavoriteParkingZoneControllerTest {
   }
 
   @Test
-  @DisplayName("favoriteParkingZoneController-toggleFavoriteParkingzone테스트 올바른값이 리턴")
+  @DisplayName("favoriteParkingZoneController-addFavoriteParkingzone테스트 올바른값이 요청")
   void postFavoriteParkingZone_ShouldReturenRightValue() throws Exception {
 
     //Given
     //1. sample request
-    ToggleFavoriteParkingZoneRequest request = ToggleFavoriteParkingZoneRequest.builder()
+    AddFavoriteParkingZoneRequest request = AddFavoriteParkingZoneRequest.builder()
         .parkingZoneId(999L)
-        .isBookmark(true)
         .build();
     String content = objectMapper.writeValueAsString(request);
     //2. Mock service 설정
-    when(favoriteParkingZoneService.toggleFavoriteParkingZone(
-        any(ToggleFavoriteParkingZoneDTO.class)))
-        .thenReturn(any(ToggleFavoriteParkingZoneResponse.class));
+    when(favoriteParkingZoneService.addFavoriteParkingZone(
+        any(AddFavoriteParkingZoneDTO.class)))
+        .thenReturn(any(AddFavoriteParkingZoneResponse.class));
 
     // When
     mockMvc.perform(post("/api/v1/parking/parkingzone/bookmark").with(csrf()).contentType(
             MediaType.APPLICATION_JSON).content(content))
         .andExpect(status().isOk());
 
-    verify(favoriteParkingZoneService, times(1)).toggleFavoriteParkingZone(any());
+    verify(favoriteParkingZoneService, times(1)).addFavoriteParkingZone(any());
+  }
+
+  @Test
+  @DisplayName("favoriteParkingZoneController-deleteFavoriteParkingzone테스트 올바른값이 요청")
+  void deleteFavoriteParkingZone_ShouldReturenRightValue() throws Exception {
+
+    //Given
+    //1. sample request
+    DeleteFavoriteParkingZoneRequest request = DeleteFavoriteParkingZoneRequest.builder()
+        .parkingZoneId(999L)
+        .build();
+    String content = objectMapper.writeValueAsString(request);
+    //2. Mock service설정
+    when(favoriteParkingZoneService.deleteFavoriteParkingZone(
+        any(DeleteFavoriteParkingZoneDTO.class)))
+        .thenReturn(any(DeleteFavoriteParkingZoneResponse.class));
+
+    // When
+    mockMvc.perform(delete("/api/v1/parking/parkingzone/bookmark").with(csrf()).contentType(
+            MediaType.APPLICATION_JSON).content(content))
+        .andExpect(status().isOk());
+
+    verify(favoriteParkingZoneService, times(1)).deleteFavoriteParkingZone(any());
+
   }
 }

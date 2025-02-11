@@ -4,8 +4,10 @@ import lombok.RequiredArgsConstructor;
 import org.example.honorsparkingbe.domain.entity.FavoriteParkingZoneEntity;
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
-import org.example.honorsparkingbe.dto.ToggleFavoriteParkingZoneDTO;
-import org.example.honorsparkingbe.dto.response.ToggleFavoriteParkingZoneResponse;
+import org.example.honorsparkingbe.dto.AddFavoriteParkingZoneDTO;
+import org.example.honorsparkingbe.dto.DeleteFavoriteParkingZoneDTO;
+import org.example.honorsparkingbe.dto.response.AddFavoriteParkingZoneResponse;
+import org.example.honorsparkingbe.dto.response.DeleteFavoriteParkingZoneResponse;
 import org.example.honorsparkingbe.repository.FavoriteParkingZoneRepository;
 import org.example.honorsparkingbe.repository.MemberRepository;
 import org.example.honorsparkingbe.repository.ParkingZoneRepository;
@@ -25,12 +27,11 @@ public class FavoriteParkingZoneService {
   private final ParkingZoneRepository parkingZoneRepository;
   private final MemberRepository memberRepository;
 
-  @Transactional
-  public ToggleFavoriteParkingZoneResponse addFavoriteParkingZone(
-      ToggleFavoriteParkingZoneDTO dto) {
+  public AddFavoriteParkingZoneResponse addFavoriteParkingZone(
+      AddFavoriteParkingZoneDTO dto) {
 
     Long userId = dto.getUserId();
-    Long parkingZoneId = dto.getToggleFavoriteParkingZoneRequest().getParkingZoneId();
+    Long parkingZoneId = dto.getAddFavoriteParkingZoneRequest().getParkingZoneId();
 
     // 중복 여부 확인 없이 바로 저장 (DB에 Unique 제약 조건 설정)
     FavoriteParkingZoneEntity newFavorite = FavoriteParkingZoneEntity.builder()
@@ -40,28 +41,56 @@ public class FavoriteParkingZoneService {
 
     try {
       favoriteParkingZoneRepository.save(newFavorite);
-      return ToggleFavoriteParkingZoneResponse.builder()
+      return AddFavoriteParkingZoneResponse.builder()
           .isSuccess(true)
           .isBookmark(true)
+          .parkingZoneId(parkingZoneId)
           .build();
     } catch (DataIntegrityViolationException e) { // 이미 존재하는 경우 실패 처리
       logger.warn(
           "[FavoriteParkingZoneService.toggleFavoriteParkingZone] 중복 데이터 저장 시도 또는 제약 조건 위반 - userId: {}, parkingZoneId: {}, error: {}",
           userId, parkingZoneId, e.getMessage());
 
-      return ToggleFavoriteParkingZoneResponse.builder()
+      return AddFavoriteParkingZoneResponse.builder()
           .isSuccess(false)
           .isBookmark(true)
+          .parkingZoneId(parkingZoneId)
           .build();
     } catch (Exception e) {
       logger.error(
           "[FavoriteParkingZoneService.toggleFavoriteParkingZone] 예상치 못한 오류 발생 - userId: {}, parkingZoneId: {} error: {}",
           userId, parkingZoneId, e.getMessage());
 
-      return ToggleFavoriteParkingZoneResponse.builder()
+      return AddFavoriteParkingZoneResponse.builder()
           .isSuccess(false)
           .isBookmark(false)
+          .parkingZoneId(parkingZoneId)
           .build();
     }
+  }
+
+  @Transactional
+  public DeleteFavoriteParkingZoneResponse deleteFavoriteParkingZone(
+      DeleteFavoriteParkingZoneDTO dto
+  ) {
+    Long userId = dto.getUserId();
+    Long parkingZoneId = dto.getDeleteFavoriteParkingZoneRequest().getParkingZoneId();
+
+    int deleteCount = favoriteParkingZoneRepository.deleteByMemberEntity_IdAndParkingZoneEntity_Id(
+        userId,
+        parkingZoneId);
+
+    if (deleteCount != 1) {
+      throw new RuntimeException(String.format(
+          "[FavoriteParkingZoneService-deleteFavoriteParkingZone] 에러 발생, memberId: %d, parkingZoneId: %d",
+          userId, parkingZoneId)
+      );
+    }
+
+    return DeleteFavoriteParkingZoneResponse.builder()
+        .isSuccess(true)
+        .isBookmark(false)
+        .parkingZoneId(parkingZoneId)
+        .build();
   }
 }

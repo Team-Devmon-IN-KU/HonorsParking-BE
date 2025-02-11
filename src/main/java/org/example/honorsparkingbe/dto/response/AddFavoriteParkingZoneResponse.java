@@ -7,7 +7,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ToggleFavoriteParkingZoneResponse {
+public class AddFavoriteParkingZoneResponse {
 
   private boolean isSuccess;
   private Long parkingZoneId;

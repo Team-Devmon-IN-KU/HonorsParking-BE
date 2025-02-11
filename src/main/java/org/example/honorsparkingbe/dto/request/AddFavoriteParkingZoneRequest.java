@@ -8,11 +8,9 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-public class ToggleFavoriteParkingZoneRequest {
+public class AddFavoriteParkingZoneRequest {
 
   @NotNull(message = "parkingZoneId 는 필수입니다.")
   private Long parkingZoneId;
-  @NotNull(message = "isBookmark는 필수입니다.")
-  private Boolean isBookmark;
 
 }

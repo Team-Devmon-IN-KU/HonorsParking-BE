@@ -12,7 +12,6 @@ import org.example.honorsparkingbe.dto.DeleteParkingHistoryDTO;
 import org.example.honorsparkingbe.dto.request.ParkingHistoryDeleteRequest;
 import org.example.honorsparkingbe.dto.response.ParkingHistoryDeleteResponse;
 import org.example.honorsparkingbe.repository.ParkingHistoryRepository;
-import org.example.honorsparkingbe.security.CustomUserDetails;
 import org.example.honorsparkingbe.service.ParkingHistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,17 +19,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.security.core.Authentication;
 
 @ExtendWith(MockitoExtension.class)
 public class ParkingHistoryDeleteServiceTest {
 
   @Mock
   private ParkingHistoryRepository parkingHistoryRepository;
-  @Mock
-  private Authentication authentication;
-  @Mock
-  private CustomUserDetails customUserDetails;
 
   @InjectMocks
   private ParkingHistoryService parkingHistoryService;
