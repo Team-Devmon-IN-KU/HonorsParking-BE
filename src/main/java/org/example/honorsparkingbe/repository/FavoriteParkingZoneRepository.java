@@ -1,6 +1,5 @@
 package org.example.honorsparkingbe.repository;
 
-import java.util.Optional;
 import org.example.honorsparkingbe.domain.entity.FavoriteParkingZoneEntity;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -23,9 +22,6 @@ public interface FavoriteParkingZoneRepository extends
       """)
   Page<FavoriteParkingZoneEntity> findAllByMemberEntity_IdOrderByIdAsc(
       @Param("memberId") Long memberId, Pageable pageable);
-
-  Optional<FavoriteParkingZoneEntity> findByMemberEntity_IdAndParkingZoneEntity_Id(Long memberId,
-      Long parkingZoneId);
 
   @Transactional
   @Modifying
