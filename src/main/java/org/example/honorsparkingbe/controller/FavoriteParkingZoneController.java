@@ -23,14 +23,14 @@ public class FavoriteParkingZoneController {
   private final FavoriteParkingZoneService favoriteParkingZoneService;
 
   @PostMapping
-  public ResponseEntity<ToggleFavoriteParkingZoneResponse> toggleFavoriteParkingZone(
+  public ResponseEntity<ToggleFavoriteParkingZoneResponse> createFavoriteParkingZone(
       @Valid @RequestBody ToggleFavoriteParkingZoneRequest request) {
 
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
     return ResponseEntity.ok(
-        favoriteParkingZoneService.toggleFavoriteParkingZone(
+        favoriteParkingZoneService.addFavoriteParkingZone(
             ToggleFavoriteParkingZoneDTO.builder()
                 .userId(customUserDetails.getId())
                 .toggleFavoriteParkingZoneRequest(request)
@@ -39,4 +39,20 @@ public class FavoriteParkingZoneController {
     );
   }
 
+//  @DeleteMapping
+//  public ResponseEntity<ToggleFavoriteParkingZoneResponse> deleteFavoriteParkingZone(
+//      @Valid @RequestBody ToggleFavoriteParkingZoneRequest request) {
+//
+//    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+//
+//    return ResponseEntity.ok(
+//        favoriteParkingZoneService.toggleFavoriteParkingZone(
+//            ToggleFavoriteParkingZoneDTO.builder()
+//                .userId(customUserDetails.getId())
+//                .toggleFavoriteParkingZoneRequest(request)
+//                .build()
+//        )
+//    );
+//  }
 }

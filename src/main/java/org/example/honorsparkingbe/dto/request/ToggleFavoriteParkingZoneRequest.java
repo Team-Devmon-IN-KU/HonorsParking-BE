@@ -1,16 +1,18 @@
 package org.example.honorsparkingbe.dto.request;
 
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
+@Builder
 public class ToggleFavoriteParkingZoneRequest {
 
   @NotNull(message = "parkingZoneId 는 필수입니다.")
   private Long parkingZoneId;
   @NotNull(message = "isBookmark는 필수입니다.")
-  private boolean isBookmark;
+  private Boolean isBookmark;
 
 }
