@@ -1,5 +1,7 @@
 package org.example.honorsparkingbe.unit.repository;
 
+import static org.assertj.core.api.Assertions.within;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
@@ -8,6 +10,7 @@ import static org.junit.Assert.assertTrue;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import org.example.honorsparkingbe.domain.entity.CarEntity;
 import org.example.honorsparkingbe.domain.entity.CityEntity;
@@ -205,7 +208,8 @@ public class ParkingHistoryRepositoryTest {
     assertEquals(null, nonDeletedHistory1.getDeleteAt());
     assertEquals(now, deleteHistory.getDeleteAt());
     assertNotEquals(preSoftDeletedHistory.getDeleteAt(), nonDeletedHistory1.getDeleteAt());
-
+    assertThat(deleteHistory.getDeleteAt())
+        .isCloseTo(now, within(100, ChronoUnit.MILLIS)); // 1/10초까지 허용
   }
 
   @Test

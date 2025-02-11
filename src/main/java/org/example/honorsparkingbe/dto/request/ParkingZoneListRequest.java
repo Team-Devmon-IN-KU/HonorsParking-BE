@@ -22,5 +22,5 @@ public class ParkingZoneListRequest {
   @Max(value = 180, message = "경도는 180 이하이어야 합니다.")
   private Double longitude;
 
-  private Long page = 0L;  // 기본값을 설정
+  private Long page;  // 기본값을 설정
 }
