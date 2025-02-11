@@ -206,7 +206,6 @@ public class ParkingHistoryRepositoryTest {
     assertNotNull(nonDeletedHistory1);
     assertNotNull(deleteHistory);
     assertEquals(null, nonDeletedHistory1.getDeleteAt());
-    assertEquals(now, deleteHistory.getDeleteAt());
     assertNotEquals(preSoftDeletedHistory.getDeleteAt(), nonDeletedHistory1.getDeleteAt());
     assertThat(deleteHistory.getDeleteAt())
         .isCloseTo(now, within(100, ChronoUnit.MILLIS)); // 1/10초까지 허용
