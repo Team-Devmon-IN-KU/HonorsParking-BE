@@ -25,5 +25,6 @@ public interface FavoriteParkingZoneRepository extends
 
   @Transactional
   @Modifying
+  @Query("DELETE FROM FavoriteParkingZoneEntity f WHERE f.memberEntity.id = :memberId AND f.parkingZoneEntity.id = :parkingZoneId")
   int deleteByMemberEntity_IdAndParkingZoneEntity_Id(Long memberId, Long parkingZoneId);
 }

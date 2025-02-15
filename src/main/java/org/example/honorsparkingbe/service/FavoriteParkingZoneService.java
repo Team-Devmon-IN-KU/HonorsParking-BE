@@ -27,6 +27,7 @@ public class FavoriteParkingZoneService {
   private final ParkingZoneRepository parkingZoneRepository;
   private final MemberRepository memberRepository;
 
+  @Transactional
   public AddFavoriteParkingZoneResponse addFavoriteParkingZone(
       AddFavoriteParkingZoneDTO dto) {
 
