@@ -13,6 +13,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 @Entity
 @Getter
@@ -35,10 +37,12 @@ public class FavoriteParkingZoneEntity {
   // ParkingZone 연관 관계
   @ManyToOne
   @JoinColumn(name = "parkingZoneId", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private ParkingZoneEntity parkingZoneEntity;
 
   // Member 연관 관계
   @ManyToOne
   @JoinColumn(name = "memberId", nullable = false)
+  @OnDelete(action = OnDeleteAction.CASCADE)
   private MemberEntity memberEntity;
 }

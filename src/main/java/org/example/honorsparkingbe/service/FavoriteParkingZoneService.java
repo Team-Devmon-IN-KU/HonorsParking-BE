@@ -48,25 +48,24 @@ public class FavoriteParkingZoneService {
           .parkingZoneId(parkingZoneId)
           .build();
     } catch (DataIntegrityViolationException e) { // 이미 존재하는 경우 실패 처리
-      logger.warn(
+      logger.error(
           "[FavoriteParkingZoneService.toggleFavoriteParkingZone] 중복 데이터 저장 시도 또는 제약 조건 위반 - userId: {}, parkingZoneId: {}, error: {}",
           userId, parkingZoneId, e.getMessage());
 
-      return AddFavoriteParkingZoneResponse.builder()
-          .isSuccess(false)
-          .isBookmark(true)
-          .parkingZoneId(parkingZoneId)
-          .build();
+      throw new RuntimeException(String.format(
+          "[FavoriteParkingZoneService.toggleFavoriteParkingZone] 중복 데이터 저장 시도 또는 제약 조건 위반 - userId: %s, parkingZoneId: %s",
+          userId, parkingZoneId)
+      );
+
     } catch (Exception e) {
       logger.error(
           "[FavoriteParkingZoneService.toggleFavoriteParkingZone] 예상치 못한 오류 발생 - userId: {}, parkingZoneId: {} error: {}",
           userId, parkingZoneId, e.getMessage());
 
-      return AddFavoriteParkingZoneResponse.builder()
-          .isSuccess(false)
-          .isBookmark(false)
-          .parkingZoneId(parkingZoneId)
-          .build();
+      throw new RuntimeException(String.format(
+          "[FavoriteParkingZoneService.toggleFavoriteParkingZone] 예상치 못한 오류 발생 - userId: {}, parkingZoneId: {}",
+          userId, parkingZoneId)
+      );
     }
   }
 
