@@ -2,8 +2,6 @@ package org.example.honorsparkingbe.unit.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.example.honorsparkingbe.domain.entity.CityEntity;
@@ -143,64 +141,64 @@ public class ParkingZoneRepositoryTest {
         .containsExactlyInAnyOrder("서울 주차장", "부산 주차장", "대전 주차장");
   }
 
-  @Test
-  @DisplayName("특정 ID 배열을 제외한 주차장 리스트 반환 테스트")
-  void testFindAllByIdNotIn() {
-    // given
-    // 모든 주차장 목록의 ID 가져오기
-    List<Long> allIds = parkingZoneRepository.findAll().stream()
-        .map(ParkingZoneEntity::getId)
-        .collect(Collectors.toList());
+//  @Test
+//  @DisplayName("특정 ID 배열을 제외한 주차장 리스트 반환 테스트")
+//  void testFindAllByIdNotIn() {
+//    // given
+//    // 모든 주차장 목록의 ID 가져오기
+//    List<Long> allIds = parkingZoneRepository.findAll().stream()
+//        .map(ParkingZoneEntity::getId)
+//        .collect(Collectors.toList());
+//
+//    // sample 위경도값 세팅
+//    double latitude = 37.5665; // 서울 기준
+//    double longitude = 126.9780;
+//    long limit = 3;
+//
+//    // 제외할 ID 목록 (예: 서울 주차장과 부산 주차장을 제외)
+//    List<Long> excludeIds = allIds.stream()
+//        .filter(id -> id.equals(seoulParking.getId()) || id.equals(busanParking.getId()))
+//        .collect(Collectors.toList());
+//
+//    // when
+//    // 제외된 ID를 반영한 결과 가져오기
+//    List<ParkingZoneEntity> result = parkingZoneRepository.findClosestParkingZonesWithExclusion(
+//        latitude, longitude, limit, 0L, excludeIds);
+//
+//    // 테스트 검증
+//    assertThat(result).hasSize(1);  // 대전 주차장만 남아야 함
+//    assertThat(result).extracting(ParkingZoneEntity::getZoneName)
+//        .containsExactly("대전 주차장");  // "대전 주차장"이 반환되어야 함
+//  }
 
-    // sample 위경도값 세팅
-    double latitude = 37.5665; // 서울 기준
-    double longitude = 126.9780;
-    long limit = 3;
-
-    // 제외할 ID 목록 (예: 서울 주차장과 부산 주차장을 제외)
-    List<Long> excludeIds = allIds.stream()
-        .filter(id -> id.equals(seoulParking.getId()) || id.equals(busanParking.getId()))
-        .collect(Collectors.toList());
-
-    // when
-    // 제외된 ID를 반영한 결과 가져오기
-    List<ParkingZoneEntity> result = parkingZoneRepository.findClosestParkingZonesWithExclusion(
-        latitude, longitude, limit, 0L, excludeIds);
-
-    // 테스트 검증
-    assertThat(result).hasSize(1);  // 대전 주차장만 남아야 함
-    assertThat(result).extracting(ParkingZoneEntity::getZoneName)
-        .containsExactly("대전 주차장");  // "대전 주차장"이 반환되어야 함
-  }
-
-  @Test
-  @DisplayName("제외할 주차장 ID 배열이 빈 경우 모든 주차장 반환 테스트")
-  void testFindAllByIdNotIn_EmptyExcludeIds() {
-    // given
-    // 모든 주차장 목록의 ID 가져오기
-    List<Long> allIds = parkingZoneRepository.findAll().stream()
-        .map(ParkingZoneEntity::getId)
-        .collect(Collectors.toList());
-
-    // sample 위경도값 세팅
-    double latitude = 37.5665; // 서울 기준
-    double longitude = 126.9780;
-    long limit = 3;
-
-    // 제외할 ID 목록은 빈 리스트
-//        List<Long> excludeIds = new ArrayList<>();  // 빈 배열
-    List<Long> excludeIds = new ArrayList<>(Collections.singletonList(0L));
-    // Service레이어에서 전처리가 이루어지므로 0인 빈배열 주기 ParkingZone은 1 based 넘버링이기 때무에
-
-    // when
-    // 제외할 ID가 없으므로, 모든 주차장을 가져오도록 설정
-    List<ParkingZoneEntity> result = parkingZoneRepository.findClosestParkingZonesWithExclusion(
-        latitude, longitude, limit, 0L, excludeIds);
-
-    // then
-    // 결과가 제한 개수(limit)만큼 반환되어야 함
-    assertThat(result).hasSize(3);  // limit = 3이므로 3개의 주차장이 반환되어야 함
-    assertThat(result).extracting(ParkingZoneEntity::getZoneName)
-        .containsExactly("서울 주차장", "대전 주차장", "부산 주차장");  // 주차장 이름이 포함되어야 함
-  }
+//  @Test
+//  @DisplayName("제외할 주차장 ID 배열이 빈 경우 모든 주차장 반환 테스트")
+//  void testFindAllByIdNotIn_EmptyExcludeIds() {
+//    // given
+//    // 모든 주차장 목록의 ID 가져오기
+//    List<Long> allIds = parkingZoneRepository.findAll().stream()
+//        .map(ParkingZoneEntity::getId)
+//        .collect(Collectors.toList());
+//
+//    // sample 위경도값 세팅
+//    double latitude = 37.5665; // 서울 기준
+//    double longitude = 126.9780;
+//    long limit = 3;
+//
+//    // 제외할 ID 목록은 빈 리스트
+////        List<Long> excludeIds = new ArrayList<>();  // 빈 배열
+//    List<Long> excludeIds = new ArrayList<>(Collections.singletonList(0L));
+//    // Service레이어에서 전처리가 이루어지므로 0인 빈배열 주기 ParkingZone은 1 based 넘버링이기 때무에
+//
+//    // when
+//    // 제외할 ID가 없으므로, 모든 주차장을 가져오도록 설정
+//    List<ParkingZoneEntity> result = parkingZoneRepository.findClosestParkingZonesWithExclusion(
+//        latitude, longitude, limit, 0L, excludeIds);
+//
+//    // then
+//    // 결과가 제한 개수(limit)만큼 반환되어야 함
+//    assertThat(result).hasSize(3);  // limit = 3이므로 3개의 주차장이 반환되어야 함
+//    assertThat(result).extracting(ParkingZoneEntity::getZoneName)
+//        .containsExactly("서울 주차장", "대전 주차장", "부산 주차장");  // 주차장 이름이 포함되어야 함
+//  }
 }

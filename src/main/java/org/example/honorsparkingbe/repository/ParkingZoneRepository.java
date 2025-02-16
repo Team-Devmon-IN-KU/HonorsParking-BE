@@ -12,7 +12,8 @@ public interface ParkingZoneRepository extends JpaRepository<ParkingZoneEntity, 
   boolean existsByZoneName(String name);
 
   // ID 배열로 주차장 리스트 반환
-  @EntityGraph(attributePaths = {"city", "district", "eupMyeonDong",})
+  @EntityGraph(attributePaths = {"cityEntity", "districtEntity", "eupMyeonDongEntity",
+      "parkingFeeRuleEntities"})
   List<ParkingZoneEntity> findAllByIdIn(List<Long> ids);
 
   // 위경도 기준으로 가까운 거리순으로 정렬된 주차장 리스트 반환
@@ -35,7 +36,7 @@ public interface ParkingZoneRepository extends JpaRepository<ParkingZoneEntity, 
   );
 
   @Query(value = """
-          SELECT p.*,
+          SELECT p.id,
                  (6371 * acos(
                      cos(radians(:latitude)) * cos(radians(p.latitude)) *
                      cos(radians(p.longitude) - radians(:longitude)) +
@@ -46,12 +47,31 @@ public interface ParkingZoneRepository extends JpaRepository<ParkingZoneEntity, 
           ORDER BY distance ASC
           LIMIT :limit OFFSET :offset
       """, nativeQuery = true)
-  List<ParkingZoneEntity> findClosestParkingZonesWithExclusion(
+  List<Long> findClosestParkingZonesIDWithExclusion(
       @Param("latitude") double latitude,
       @Param("longitude") double longitude,
-      @Param("limit") Long limit,
-      @Param("offset") Long offset,
+      @Param("limit") int limit,
+      @Param("offset") int offset,
       @Param("excludeIds") List<Long> excludeIds);
+//  Legacy
+//  @Query(value = """
+//          SELECT p.*,
+//                 (6371 * acos(
+//                     cos(radians(:latitude)) * cos(radians(p.latitude)) *
+//                     cos(radians(p.longitude) - radians(:longitude)) +
+//                     sin(radians(:latitude)) * sin(radians(p.latitude))
+//                 )) AS distance
+//          FROM parkingZone p
+//          WHERE p.id NOT IN :excludeIds  -- 제외할 parkingZone id를 지정
+//          ORDER BY distance ASC
+//          LIMIT :limit OFFSET :offset
+//      """, nativeQuery = true)
+//  List<ParkingZoneEntity> findClosestParkingZonesWithExclusion(
+//      @Param("latitude") double latitude,
+//      @Param("longitude") double longitude,
+//      @Param("limit") int limit,
+//      @Param("offset") int offset,
+//      @Param("excludeIds") List<Long> excludeIds);
 
 }
 
