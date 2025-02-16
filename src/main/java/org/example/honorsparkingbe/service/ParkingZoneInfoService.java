@@ -60,7 +60,7 @@ public class ParkingZoneInfoService {
 
     // 4. 일반 주차장 ID배열 추출
     List<Long> nonFavoriteZonesIds = getNonFavoriteParkingZones(
-        nonParkingzonesSlots, favoriteZonesIds, query,
+        nonParkingzonesSlots, userId, favoriteZonesIds, query,
         pageable
     );
     // 5. ID 배열 합쳐 현재 페이지 필요한 ID 배열 추출
@@ -137,6 +137,7 @@ public class ParkingZoneInfoService {
 
   private List<Long> getNonFavoriteParkingZones(
       int remainingSlots, // 주차장의 갯수 제약
+      Long userId, //총 favoritezone 개수
       List<Long> favoriteZonesIds, // 제외할 즐겨찾기 주차장 ID들
       ParkingZoneListRequest query, // 필터링에 필요한 파라미터
       Pageable pageable // 페이징 처리
@@ -149,11 +150,14 @@ public class ParkingZoneInfoService {
         ? Collections.singletonList(0L)
         : favoriteZonesIds;
 
+    int totalFavoriteCount = favoriteParkingZoneRepository.countByMemberEntity_Id(userId);
+    int effectiveOffset = Math.max(0, (pageable.getPageNumber() * 10) - totalFavoriteCount);
+
     return parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
         query.getLatitude(),
         query.getLongitude(),
         remainingSlots,  // ⭐ 제한 개수 설정
-        pageable.getPageNumber() * 10,
+        effectiveOffset,
         exclusionIds
     );
   }
