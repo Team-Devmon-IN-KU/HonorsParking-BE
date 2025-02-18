@@ -53,25 +53,6 @@ public interface ParkingZoneRepository extends JpaRepository<ParkingZoneEntity, 
       @Param("limit") int limit,
       @Param("offset") int offset,
       @Param("excludeIds") List<Long> excludeIds);
-//  Legacy
-//  @Query(value = """
-//          SELECT p.*,
-//                 (6371 * acos(
-//                     cos(radians(:latitude)) * cos(radians(p.latitude)) *
-//                     cos(radians(p.longitude) - radians(:longitude)) +
-//                     sin(radians(:latitude)) * sin(radians(p.latitude))
-//                 )) AS distance
-//          FROM parkingZone p
-//          WHERE p.id NOT IN :excludeIds  -- 제외할 parkingZone id를 지정
-//          ORDER BY distance ASC
-//          LIMIT :limit OFFSET :offset
-//      """, nativeQuery = true)
-//  List<ParkingZoneEntity> findClosestParkingZonesWithExclusion(
-//      @Param("latitude") double latitude,
-//      @Param("longitude") double longitude,
-//      @Param("limit") int limit,
-//      @Param("offset") int offset,
-//      @Param("excludeIds") List<Long> excludeIds);
 
 }
 

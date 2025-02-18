@@ -2,6 +2,8 @@ package org.example.honorsparkingbe.unit.repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import org.example.honorsparkingbe.domain.entity.CityEntity;
@@ -110,19 +112,64 @@ public class ParkingZoneRepositoryTest {
   }
 
   @Test
-  @DisplayName("위경도 기준 가까운 거리순 정렬 확인")
-  void testFindClosestParkingZones() {
+  @DisplayName("위경도 기준 가까운 거리순 정렬 ID 정렬확인")
+  void testFindClosestParkingZonesIds() {
     double latitude = 37.5665; // 서울 기준
     double longitude = 126.9780;
     int limit = 3;
 
-    List<ParkingZoneEntity> result = parkingZoneRepository.findClosestParkingZones(latitude,
-        longitude, limit, 0);
+    List<Long> result = parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
+        latitude,
+        longitude, limit, 0, new ArrayList<>(Arrays.asList(0L)));
 
     assertThat(result).hasSize(3);
-    assertThat(result.get(0).getZoneName()).isEqualTo("서울 주차장");  // 가장 가까운 곳
-    assertThat(result.get(1).getZoneName()).isEqualTo("대전 주차장");  // 두 번째 가까운 곳
-    assertThat(result.get(2).getZoneName()).isEqualTo("부산 주차장");  // 가장 먼 곳
+    assertThat(result)
+        .containsExactly(
+            seoulParking.getId(),
+            daejeonParking.getId(),
+            busanParking.getId()
+        );
+  }
+
+  @Test
+  @DisplayName("위경도 기준 가까운 거리순 정렬 - 특정 ID 1개 제외")
+  void testFindClosestParkingZonesIdsWithExclusion1() {
+    double latitude = 37.5665; // 서울 기준
+    double longitude = 126.9780;
+    int limit = 3;
+
+    List<Long> excludedIds = List.of(seoulParking.getId()); // 서울 주차장 제외
+
+    List<Long> result = parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
+        latitude,
+        longitude, limit, 0, excludedIds);
+
+    assertThat(result).hasSize(2); // 서울 주차장이 제외되었으므로 2개만 남아야 함
+    assertThat(result)
+        .containsExactly(
+            daejeonParking.getId(),
+            busanParking.getId()
+        ); // 대전 → 부산 순서로 정렬되어야 함
+  }
+
+  @Test
+  @DisplayName("위경도 기준 가까운 거리순 정렬 - 특정 ID 3개 (모두)제외")
+  void testFindClosestParkingZonesIdsWithExclusionAll() {
+    double latitude = 37.5665; // 서울 기준
+    double longitude = 126.9780;
+    int limit = 3;
+
+    List<Long> excludedIds = List.of(seoulParking.getId(), daejeonParking.getId(),
+        busanParking.getId()); // 서울 주차장 제외
+
+    List<Long> result = parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
+        latitude,
+        longitude, limit, 0, excludedIds);
+
+    assertThat(result).hasSize(0); // 서울 주차장이 제외되었으므로 2개만 남아야 함
+    assertThat(result)
+        .containsExactly(
+        ); // 빈 배열이어야함
   }
 
   @Test
