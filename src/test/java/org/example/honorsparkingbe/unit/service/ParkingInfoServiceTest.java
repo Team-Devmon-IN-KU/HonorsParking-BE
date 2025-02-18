@@ -25,7 +25,6 @@ import org.example.honorsparkingbe.dto.ParkingZoneListDTO;
 import org.example.honorsparkingbe.dto.request.ParkingZoneListRequest;
 import org.example.honorsparkingbe.dto.response.ParkingZoneListResponse;
 import org.example.honorsparkingbe.repository.FavoriteParkingZoneRepository;
-import org.example.honorsparkingbe.repository.ParkingFeeRuleRepository;
 import org.example.honorsparkingbe.repository.ParkingZoneRepository;
 import org.example.honorsparkingbe.service.ParkingZoneInfoService;
 import org.example.honorsparkingbe.util.converter.dto.ParkingFeeRuleDTOConverter;
@@ -49,8 +48,6 @@ public class ParkingInfoServiceTest {
   private FavoriteParkingZoneRepository favoriteParkingZoneRepository;
   @Mock
   private ParkingZoneRepository parkingZoneRepository;
-  @Mock
-  private ParkingFeeRuleRepository parkingFeeRuleRepository;
   @Mock
   private ParkingZoneDTOConverter parkingZoneDTOConverter;
   @Mock
@@ -111,6 +108,7 @@ public class ParkingInfoServiceTest {
     when(parkingZoneRepository.findAllByIdIn(anyList()))
         .thenReturn(updatestotalReturnedParkingZones);
 
+    when(favoriteParkingZoneRepository.countByMemberEntity_Id(1L)).thenReturn(5);
     // when
     // 서비스 메소드 호출
     ParkingZoneListResponse response = parkingZoneInfoService.getParkingZones(ParkingZoneListDTO
@@ -146,44 +144,46 @@ public class ParkingInfoServiceTest {
   void testGetParkingZonesWithFavoriteLessThan10AndRequestPage2() {
 
     // given
-    // 2번째 페이지 요청이 가도록 관련 pager request값 수정
+    // given-1. 2번째 페이지 요청이 가도록 관련 page request값 수정
     request.setPage(1L);
     pageable = PageRequest.of(1, 10);
-    // 2. Mock favoriteZones 관련 데이터 설정 (favorite 주차장이 5개일 때)
+    // given-2. Mock favoriteZones 관련 데이터 설정 (favorite 주차장이 5개일 때)
     List<FavoriteParkingZoneEntity> favoriteZones = createFavoriteZones(0);
-
-    // PageImpl로 완성
+    // PageImpl로 Mock page완성
     Page<FavoriteParkingZoneEntity> mockPage = new PageImpl<>(favoriteZones, pageable,
         favoriteZones.size());
-
-    //2. Mock 레포지토리 세팅
-    // Mock favoriteZones Return
+    // Mock favoriteZones page Return
     when(
         favoriteParkingZoneRepository.findAllByMemberEntity_IdOrderByIdAsc(anyLong(),
             any(PageRequest.class)))
         .thenReturn(mockPage);
-    // 2 4 6 8 10 11 12 13 14 15을 ID로 가지는 non-favoriteZones-parkingZone 엔티티
+
+    //given-2. 1L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L을 ID로 가지는
+    // non-favoriteZones-parkingZone 엔티티 반환 when절 세팅
     when(parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
         anyDouble(), anyDouble(), anyInt(), anyInt(), anyList()))
         .thenReturn(
-            new ArrayList<>(Arrays.asList(2L, 4L, 6L, 8L, 10L, 11L, 12L, 13L, 14L, 15L)));
+            new ArrayList<>(Arrays.asList(11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L)));
 
-    // 총 주차장 개수 20개로 mocking
+    // given-3. 총 주차장 개수 20개로 mocking
     when(parkingZoneRepository.count()).thenReturn(20L); // 전체 주차장 20개
-    // 최종 반환 주차장 mocking
-    //ID 배열 (2, 4, 6, ..., 15)로 ID 값을 설정
-    List<Long> ids = Arrays.asList(2L, 4L, 6L, 8L, 10L, 11L, 12L, 13L, 14L, 15L);
 
-    // 1 ~ 10을 순차적으로 ID로 가지는 ParkingZoneEntity 반환
+    //  given-4. 최종 반환 주차장 mocking
+    //ID 배열 (2, 4, 6, ..., 15)로 ID 값을 설정
+    List<Long> ids = Arrays.asList(11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L);
+
+    // given-5. 최종 ParkingZone 반환 mocking
     List<ParkingZoneEntity> totalReturnedParkingZones = createNonFavoriteZones(10);
     AtomicInteger counter = new AtomicInteger(0);  // 시작값을 0으로 설정
     // ID 값을 순차적으로 설정하여 ParkingZoneEntity 객체에 적용
     List<ParkingZoneEntity> updatedParkingZones = totalReturnedParkingZones.stream()
         .peek(zone -> zone.setId(ids.get(counter.getAndAdd(1))))  // 순차적으로 ID 할당
         .collect(Collectors.toList());
-
     when(parkingZoneRepository.findAllByIdIn(anyList()))
         .thenReturn(updatedParkingZones);
+
+    // given-6. Favorite-ParkingZone 5개 반환 mocking
+    when(favoriteParkingZoneRepository.countByMemberEntity_Id(anyLong())).thenReturn(5);
 
     // when
     // 서비스 메소드 호출
@@ -200,18 +200,19 @@ public class ParkingInfoServiceTest {
 
     // 가까운 주차장 ID 조회 메서드 호출 검증
     verify(parkingZoneRepository).findClosestParkingZonesIDWithExclusion(
-        eq(request.getLatitude()), eq(request.getLongitude()), eq(10), eq(10),
+        eq(request.getLatitude()), eq(request.getLongitude()), eq(10), eq(5),
         eq(Arrays.asList(0L)));
 
     // 전체 주차장 개수 조회 메서드 호출 검증
     verify(parkingZoneRepository).count();
     // ID 목록으로 주차장 조회 메서드 호출 검증
     verify(parkingZoneRepository).findAllByIdIn(
-        eq(Arrays.asList(2L, 4L, 6L, 8L, 10L, 11L, 12L, 13L, 14L, 15L)));
+        eq(Arrays.asList(11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L)));
+
     assertNotNull(response);
     assertEquals(1, response.getPagination().getCurrentPage());
     assertEquals(20, response.getPagination().getTotalItems());
-    assertEquals(10, response.getParkingZones().size()); // 즐겨찾기 5개 + 일반 5개 = 10개
+    assertEquals(10, response.getParkingZones().size()); // 일반 10개 = 10개
     assertEquals(2, response.getPagination().getTotalPages()); // 페이지 수 확인
 
   }
@@ -332,7 +333,7 @@ public class ParkingInfoServiceTest {
 
     when(parkingZoneRepository.findAllByIdIn(anyList()))
         .thenReturn(updatedParkingZones);
-
+    when(favoriteParkingZoneRepository.countByMemberEntity_Id(1L)).thenReturn(15);
     // when
     // 서비스 메소드 호출
     ParkingZoneListResponse response = parkingZoneInfoService.getParkingZones(ParkingZoneListDTO
@@ -364,11 +365,80 @@ public class ParkingInfoServiceTest {
   @Test
   @DisplayName("favoriteZone이 0개 이면서 1페이지 요청이 잘 수행 되었는지")
   void testGetParkingZonesWithFavoriteZeroAndRequestPage1() {
+    // given
+    // 1. Mock favoriteZones 관련 데이터 설정 (favorite 주차장이 0개일 때)
+    List<FavoriteParkingZoneEntity> favoriteZones = createFavoriteZones(0);
+    AtomicInteger counter = new AtomicInteger(1);
+    //  favoriteZones-parkingZone 엔티티 0개를 가지는 페이지 반환
+    List<FavoriteParkingZoneEntity> updatedFavoriteZones = favoriteZones.stream()
+        .peek(zone -> zone.getParkingZoneEntity().setId((long) counter.getAndAdd(1)))
+        .collect(Collectors.toList());
+    // PageImpl로 완성
+    Page<FavoriteParkingZoneEntity> mockPage = new PageImpl<>(updatedFavoriteZones, pageable,
+        favoriteZones.size());
+
+    // when절을 통한 favoriteZones return
+    when(
+        favoriteParkingZoneRepository.findAllByMemberEntity_IdOrderByIdAsc(anyLong(),
+            any(PageRequest.class)))
+        .thenReturn(mockPage);
+
+    // 총 주차장 개수 20개로 mocking
+    when(parkingZoneRepository.count()).thenReturn(20L); // 전체 주차장 20개
+
+    // Non-Favorite-ParkingZone Mock
+    when(parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
+        anyDouble(), anyDouble(), anyInt(), anyInt(), anyList()))
+        .thenReturn(
+            new ArrayList<>(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L)));
+
+    //최종 반환 되는 주차장 ID 배열 (1 - 10)로 ID 값을 설정
+    List<Long> ids = Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L);
+
+    // 최종 반환 주차장 mocking
+    // 1 ~ 10을 순차적으로 ID로 가지는 ParkingZoneEntity 반환
+    List<ParkingZoneEntity> totalReturnedParkingZones = createNonFavoriteZones(10);
+    AtomicInteger counter2 = new AtomicInteger(0);  // 시작값을 0으로 설정
+    // ID 값을 순차적으로 설정하여 ParkingZoneEntity 객체에 적용
+    List<ParkingZoneEntity> updatedParkingZones = totalReturnedParkingZones.stream()
+        .peek(zone -> zone.setId(ids.get(counter2.getAndAdd(1))))  // 순차적으로 ID 할당
+        .collect(Collectors.toList());
+
+    when(parkingZoneRepository.findAllByIdIn(anyList()))
+        .thenReturn(updatedParkingZones);
+
+    // when
+    // 서비스 메소드 호출
+    ParkingZoneListResponse response = parkingZoneInfoService.getParkingZones(ParkingZoneListDTO
+        .builder()
+        .userId(1L)
+        .parkingZoneListRequest(request)
+        .build());
+
+    // then
+    // 즐겨찾기 주차장 조회 메서드 호출 검증
+    verify(favoriteParkingZoneRepository).findAllByMemberEntity_IdOrderByIdAsc(eq(1L),
+        eq(pageable));
+    // 가까운 주차장 ID 조회 메서드 호출 검증
+    verify(parkingZoneRepository).findClosestParkingZonesIDWithExclusion(
+        eq(request.getLatitude()), eq(request.getLongitude()), eq(10), eq(0),
+        eq(Arrays.asList(0L)));
+    // 전체 주차장 개수 조회 메서드 호출 검증
+    verify(parkingZoneRepository).count();
+    // ID 목록으로 주차장 조회 메서드 호출 검증
+    verify(parkingZoneRepository).findAllByIdIn(
+        eq(Arrays.asList(1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L)));
+    assertNotNull(response);
+    assertEquals(0, response.getPagination().getCurrentPage());
+    assertEquals(20, response.getPagination().getTotalItems());
+    assertEquals(10, response.getParkingZones().size()); // 즐겨찾기 10개
+    assertEquals(2, response.getPagination().getTotalPages()); // 페이지 수 확인
   }
 
   @Test
   @DisplayName("favoriteZone이 0개 이면서 2페이지 요청이 잘 수행 되었는지")
-  void testGetParkingZonesWithFavoriteZeroAndRequestPage1() {
+  void testGetParkingZonesWithFavoriteZeroAndRequestPage2() {
+
   }
 
   // Helper 메서드

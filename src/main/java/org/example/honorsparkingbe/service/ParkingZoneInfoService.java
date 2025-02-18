@@ -50,7 +50,6 @@ public class ParkingZoneInfoService {
     // 즐겨찾기 주차장에서 ID들 추출
     List<Long> favoriteZonesIds = favoriteParkingZones.stream().map(ParkingZoneEntity::getId)
         .collect(Collectors.toList());
-
     // 3. nonParkingzonesSlots -> 일반 주차장이 필요한 개수
     int nonParkingzonesSlots = Math.min(
         10, // 최대 10이하
@@ -145,14 +144,12 @@ public class ParkingZoneInfoService {
     if (remainingSlots <= 0) {
       return Collections.emptyList();
     }
-
     List<Long> exclusionIds = favoriteZonesIds.isEmpty()
         ? Collections.singletonList(0L)
         : favoriteZonesIds;
 
     int totalFavoriteCount = favoriteParkingZoneRepository.countByMemberEntity_Id(userId);
     int effectiveOffset = Math.max(0, (pageable.getPageNumber() * 10) - totalFavoriteCount);
-
     return parkingZoneRepository.findClosestParkingZonesIDWithExclusion(
         query.getLatitude(),
         query.getLongitude(),
