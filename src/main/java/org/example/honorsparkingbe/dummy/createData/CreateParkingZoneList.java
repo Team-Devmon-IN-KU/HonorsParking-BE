@@ -63,6 +63,8 @@ public class CreateParkingZoneList {
         .cityEntity(YonginCity)
         .districtEntity(CheinGu)
         .eupMyeonDongEntity(BaekyapMyeon)
+        .thumbnailUrl(
+            "https://res.cloudinary.com/dhabktrg9/image/upload/v1739866539/qlr3ftquadlujyrhwjon.png")
         .build();
     // 요금 규칙 생성
     ParkingFeeRuleEntity parkingFeeRuleEntit1_1 = ParkingFeeRuleEntity.builder()
@@ -92,6 +94,8 @@ public class CreateParkingZoneList {
         .cityEntity(YonginCity)
         .districtEntity(CheinGu)
         .eupMyeonDongEntity(BaekyapMyeon)
+        .thumbnailUrl(
+            "https://res.cloudinary.com/dhabktrg9/image/upload/v1739866539/vv06izwwawtkwqqdw1a3.png")
         .build();
 
     ParkingFeeRuleEntity parkingFeeRuleEntit2_1 = ParkingFeeRuleEntity.builder()
@@ -112,6 +116,8 @@ public class CreateParkingZoneList {
         .cityEntity(YonginCity)
         .districtEntity(CheinGu)
         .eupMyeonDongEntity(BaekyapMyeon)
+        .thumbnailUrl(
+            "https://res.cloudinary.com/dhabktrg9/image/upload/v1739866539/seblxkuswovn9w1mu5em.png")
         .build();
 
     ParkingFeeRuleEntity parkingFeeRuleEntit3_1 = ParkingFeeRuleEntity.builder()

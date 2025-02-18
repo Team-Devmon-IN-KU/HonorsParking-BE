@@ -84,4 +84,6 @@ public class ParkingZoneEntity {
   //해당 주차장 요금
   @OneToMany(mappedBy = "parkingZoneEntity", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
   private List<ParkingFeeRuleEntity> parkingFeeRuleEntities;
+
+  private String thumbnailUrl;
 }

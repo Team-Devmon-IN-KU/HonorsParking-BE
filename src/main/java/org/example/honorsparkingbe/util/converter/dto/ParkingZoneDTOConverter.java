@@ -34,6 +34,7 @@ public class ParkingZoneDTOConverter {
         .floor(parkingZoneEntity.getFloors())
         .maxCost(parkingZoneEntity.getMaxCost())
         .parkingFeeRules(parkingFeeRuleList)
+        .thumbnail(parkingZoneEntity.getThumbnailUrl())
         .build();
   }
 }
