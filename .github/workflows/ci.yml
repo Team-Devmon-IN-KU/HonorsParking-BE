@@ -1,0 +1,43 @@
+name: Test for CI In PR
+
+on:
+  pull_request:
+    branches:
+      - '*'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      # 커밋한 파일들을 불러옴
+      - name: Github Repository 파일 불러오기
+        # 레포지토리에 저장되어있는 코드 불러오는 라이브러리
+        uses: actions/checkout@v4
+
+      # Github Actions에 빌드, 테스트 할 때 필요한 JDK 설치
+      - name: JDK 21 설치
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+
+      # application.yml 파일 생성
+      - name: application.yml 파일 만들기
+        run: |
+          mkdir -p ./src/main/resources/config
+          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/config/application.yml
+
+      # application.properties 파일 생성
+      - name: application.properties 파일 만들기
+        run: |
+          mkdir -p ./src/main/resources/config
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/config/application.properties
+
+      # application-test.yml 파일 생성
+      - name: application-test.yml 파일 만들기
+        run: |
+          mkdir -p ./src/test/resources/config
+          echo "${{ secrets.APPLICATION_TEST_YML }}" > ./src/test/resources/config/application-test.yml
+
+      - name: 테스트 및 빌드하기
+        run: ./gradlew clean build
