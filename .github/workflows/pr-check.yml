@@ -55,6 +55,9 @@ jobs:
           BASE_COMMIT=$(git merge-base HEAD origin/develop)
           LATEST_COMMIT=$(git rev-parse origin/develop)
 
+          echo "🔍 BASE_COMMIT: $BASE_COMMIT"
+          echo "🔍 LATEST_COMMIT: $LATEST_COMMIT"
+
           if [ "$BASE_COMMIT" != "$LATEST_COMMIT" ]; then
             echo "❌ PR이 최신 develop 브랜치를 포함하고 있지 않습니다."
             echo "PR을 업데이트하세요: git merge origin/develop"
@@ -62,3 +65,4 @@ jobs:
           fi
 
           echo "✅ PR이 최신 develop 브랜치를 포함하고 있습니다."
+          
