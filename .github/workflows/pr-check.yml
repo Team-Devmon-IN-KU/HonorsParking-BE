@@ -49,11 +49,20 @@ jobs:
         with:
           fetch-depth: 0 # 전체 히스토리를 가져와야 merge-base 체크 가능
 
+      - name: Checkout PR branch
+        run: |
+          # PR 브랜치로 체크아웃
+          git checkout $GITHUB_HEAD_REF
+          echo "✅ PR 브랜치로 체크아웃 완료: $GITHUB_HEAD_REF"
+
       - name: Check if branch is up to date with develop
         run: |
           git fetch origin develop
           BASE_COMMIT=$(git merge-base HEAD origin/develop)
           LATEST_COMMIT=$(git rev-parse origin/develop)
+
+          echo "🔍 BASE_COMMIT: $BASE_COMMIT"
+          echo "🔍 LATEST_COMMIT: $LATEST_COMMIT"
 
           if [ "$BASE_COMMIT" != "$LATEST_COMMIT" ]; then
             echo "❌ PR이 최신 develop 브랜치를 포함하고 있지 않습니다."
