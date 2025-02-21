@@ -41,3 +41,24 @@ jobs:
 
       - name: 테스트 및 빌드하기
         run: ./gradlew clean build
+  check-branch-up-to-date:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Repository Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # 전체 히스토리를 가져와야 merge-base 체크 가능
+
+      - name: Check if branch is up to date with develop
+        run: |
+          git fetch origin develop
+          BASE_COMMIT=$(git merge-base HEAD origin/develop)
+          LATEST_COMMIT=$(git rev-parse origin/develop)
+
+          if [ "$BASE_COMMIT" != "$LATEST_COMMIT" ]; then
+            echo "❌ PR이 최신 develop 브랜치를 포함하고 있지 않습니다."
+            echo "PR을 업데이트하세요: git merge origin/develop"
+            exit 1
+          fi
+
+          echo "✅ PR이 최신 develop 브랜치를 포함하고 있습니다."
