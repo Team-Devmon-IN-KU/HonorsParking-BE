@@ -34,6 +34,8 @@ public class CardEntity {
   private String cardCompany; // 카드 회사
 
   private String cardNickname; // 카드 별명
+
+  private String hashedCardNumber; // 해쉬된 카드 넘버
 }
 
 
