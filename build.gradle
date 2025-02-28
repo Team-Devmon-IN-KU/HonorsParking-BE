@@ -55,7 +55,10 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
     // SWAGER docs
     implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
-
+    // Redis테스트를 위한 test-containers
+    testImplementation 'org.testcontainers:testcontainers:1.19.3'
+    testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
+    testImplementation 'org.springframework.boot:spring-boot-testcontainers'
 }
 
 tasks.named('test') {
