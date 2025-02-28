@@ -9,6 +9,7 @@ public class GetPaymentInfoResponse {
 
   private Card card;
   private Long cost;
+  private String inCarImage;
 
   @Builder
   @Getter

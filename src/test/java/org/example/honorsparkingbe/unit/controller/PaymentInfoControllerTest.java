@@ -6,11 +6,13 @@ import static org.mockito.Mockito.verify;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.catalina.security.SecurityConfig;
 import org.example.honorsparkingbe.Slf4jRestControllerAdvice;
 import org.example.honorsparkingbe.controller.PaymentInfoController;
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.enums.MemberRole;
+import org.example.honorsparkingbe.dto.PaymentInfoDTO;
 import org.example.honorsparkingbe.security.CustomUserDetails;
 import org.example.honorsparkingbe.service.PaymentInfoService;
 import org.junit.jupiter.api.BeforeEach;
@@ -67,10 +69,13 @@ public class PaymentInfoControllerTest {
 
   @Test
   void getPaymentInfo() throws Exception {
-
+    //given
+    HttpServletResponse response;
     // When
     mockMvc.perform(get("/api/v1/pakring/paymentInfo")).andExpect(status().isOk());
 
-    verify(paymentInfoService, times(1)).getPaymentInfo(any());
+    verify(paymentInfoService, times(1)).getPaymentInfo(any(PaymentInfoDTO.class),
+        any(HttpServletResponse.class));
+
   }
 }

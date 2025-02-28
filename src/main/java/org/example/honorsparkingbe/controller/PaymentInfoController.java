@@ -1,5 +1,6 @@
 package org.example.honorsparkingbe.controller;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.example.honorsparkingbe.dto.PaymentInfoDTO;
 import org.example.honorsparkingbe.dto.response.GetPaymentInfoResponse;
@@ -20,17 +21,21 @@ public class PaymentInfoController {
 
   private final PaymentInfoService paymentInfoService;
 
-  @GetMapping
-  public ResponseEntity<GetPaymentInfoResponse> getPaymentInfo() {
+  @GetMapping()
+  public ResponseEntity<GetPaymentInfoResponse> getPaymentInfo(HttpServletResponse response) {
+    // Authentication을 통해 사용자 정보 가져오기
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
 
-    return ResponseEntity.ok(
-        paymentInfoService.getPaymentInfo(
-            PaymentInfoDTO.builder()
-                .userId(customUserDetails.getId())
-                .build())
+    // 서비스에 사용자 ID와 응답 객체를 전달
+    GetPaymentInfoResponse paymentInfoResponse = paymentInfoService.getPaymentInfo(
+        PaymentInfoDTO.builder()
+            .userId(customUserDetails.getId())
+            .build(),
+        response
     );
+
+    return ResponseEntity.ok(paymentInfoResponse);
   }
 
 }
