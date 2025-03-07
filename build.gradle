@@ -59,6 +59,9 @@ dependencies {
     testImplementation 'org.testcontainers:testcontainers:1.19.3'
     testImplementation 'org.testcontainers:junit-jupiter:1.19.3'
     testImplementation 'org.springframework.boot:spring-boot-testcontainers'
+    
+    implementation 'commons-net:commons-net:3.9.0' // FTP 클라이언트
+
 }
 
 tasks.named('test') {
