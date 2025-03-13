@@ -58,7 +58,7 @@ public class SecurityConfig {
             .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 활성화
         .authorizeHttpRequests((auth) -> auth
             .requestMatchers("/api/v1/", "/api/v1/auth/login/**", "/api/v1/auth/join", "/confirm",
-                "/swagger-ui/**", "/v3/api-docs/**", "api/v1/auth/check-authId").permitAll()
+                "/swagger-ui/**", "/v3/api-docs/**", "api/v1/auth/check-authId", "/api/v1/non-user/car").permitAll()
             .requestMatchers("/api/v1/admin").hasRole("ADMIN")                  // 해당 role만 접근 가능
             .requestMatchers("/api/v1/my/**").hasAnyRole("ADMIN", "USER") // /api/v1/my/**만 허용
             .anyRequest().authenticated()

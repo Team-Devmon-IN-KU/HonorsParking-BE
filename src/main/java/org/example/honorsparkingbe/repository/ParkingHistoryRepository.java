@@ -2,6 +2,9 @@ package org.example.honorsparkingbe.repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+
+import org.example.honorsparkingbe.domain.entity.CarEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,5 +26,10 @@ public interface ParkingHistoryRepository extends JpaRepository<ParkingHistoryEn
       @Param("memberId") Long memberId);
 
   void deleteAllByDeleteAtBefore(LocalDateTime deleteAt);
-    ParkingHistoryEntity findFirstByMemberEntityIdOrderByEntranceTimeDesc(Long memberId);
+  ParkingHistoryEntity findFirstByMemberEntityIdOrderByEntranceTimeDesc(Long memberId);
+
+  Optional<ParkingHistoryEntity> findTopByCarEntityOrderByEntranceTimeDesc(CarEntity carEntity);
+
+
+  Optional<ParkingHistoryEntity> findByEntranceTime(LocalDateTime exitTime);
 }

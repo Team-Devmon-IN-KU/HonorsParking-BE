@@ -33,6 +33,7 @@ dependencies {
     implementation 'org.springframework.session:spring-session-data-redis'
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:12.6.1.jre11'// 아너스 파킹 원격 서버 접속
 
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
