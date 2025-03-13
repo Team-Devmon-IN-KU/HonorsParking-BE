@@ -3,8 +3,8 @@ name: Deploy To EC2
 on:
   push:
     branches:
-      #- feat/cicd
-      - develop
+      - feat/ec2Deploy
+      # - develop
 
 jobs:
   deploy:
