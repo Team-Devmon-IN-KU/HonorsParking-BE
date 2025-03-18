@@ -3,6 +3,7 @@ package org.example.honorsparkingbe.config;
 import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -35,12 +36,15 @@ public class InternalDBConfig {
   @Bean(name = "internalEntityManagerFactory")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory(
       EntityManagerFactoryBuilder builder,
-      @Qualifier("internalDataSource") DataSource dataSource) {
+      @Qualifier("internalDataSource") DataSource dataSource,
+      JpaProperties jpaProperties // 기존 jpa 프로퍼티 유지
+  ) {
 
     return builder
         .dataSource(dataSource)
         .packages("org.example.honorsparkingbe.domain.entity") // 내부 DB 엔티티 패키지
         .persistenceUnit("internal")
+        .properties(jpaProperties.getProperties())
         .build();
   }
 

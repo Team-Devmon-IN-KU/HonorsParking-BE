@@ -34,6 +34,9 @@ dependencies {
     implementation 'com.googlecode.json-simple:json-simple:1.1.1'
     implementation 'org.springframework.boot:spring-boot-starter-logging'
 
+    // MS DB driver
+    implementation 'com.microsoft.sqlserver:mssql-jdbc:8.2.2.jre8'
+
     compileOnly 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
