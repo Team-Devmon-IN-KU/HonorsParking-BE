@@ -8,7 +8,7 @@ import org.example.honorsparkingbe.domain.session.PaymentSessionManager;
 import org.example.honorsparkingbe.dto.PaymentInfoDTO;
 import org.example.honorsparkingbe.dto.response.GetPaymentInfoResponse;
 import org.example.honorsparkingbe.dto.response.GetPaymentInfoResponse.Card;
-import org.example.honorsparkingbe.repository.CardRepository;
+import org.example.honorsparkingbe.repository.internal.CardRepository;
 import org.springframework.stereotype.Service;
 
 @Service

@@ -1,7 +1,6 @@
 package org.example.honorsparkingbe.service;
 
-import org.example.honorsparkingbe.repository.MemberRepository;
-import org.example.honorsparkingbe.service.JoinService;
+import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,36 +14,36 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class) // Mockito 환경에서 실행
 public class IdDoubleCheckTest {
 
-    @Mock
-    private MemberRepository memberRepository;
+  @Mock
+  private MemberRepository memberRepository;
 
-    @InjectMocks
-    private JoinService joinService;
+  @InjectMocks
+  private JoinService joinService;
 
-    @Test
-    void id_already_exists() {
-        // given
-        String authId = "existingUser";
-        when(memberRepository.existsByAuthId(authId)).thenReturn(true);
+  @Test
+  void id_already_exists() {
+    // given
+    String authId = "existingUser";
+    when(memberRepository.existsByAuthId(authId)).thenReturn(true);
 
-        // when
-        boolean isAvailable = joinService.isAuthIdAvailable(authId);
+    // when
+    boolean isAvailable = joinService.isAuthIdAvailable(authId);
 
-        // then
-        assertTrue(isAvailable);
-    }
+    // then
+    assertTrue(isAvailable);
+  }
 
 
-    @Test
-    void id_not_exists() {
-        // given
-        String authId = "newUser";
-        when(memberRepository.existsByAuthId(authId)).thenReturn(false);
+  @Test
+  void id_not_exists() {
+    // given
+    String authId = "newUser";
+    when(memberRepository.existsByAuthId(authId)).thenReturn(false);
 
-        // when
-        boolean isAvailable = joinService.isAuthIdAvailable(authId);
+    // when
+    boolean isAvailable = joinService.isAuthIdAvailable(authId);
 
-        // then
-        assertFalse(isAvailable);
-    }
+    // then
+    assertFalse(isAvailable);
+  }
 }

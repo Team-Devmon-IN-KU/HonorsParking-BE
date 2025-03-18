@@ -20,7 +20,7 @@ import org.example.honorsparkingbe.dto.request.AddFavoriteParkingZoneRequest;
 import org.example.honorsparkingbe.dto.request.DeleteFavoriteParkingZoneRequest;
 import org.example.honorsparkingbe.dto.response.AddFavoriteParkingZoneResponse;
 import org.example.honorsparkingbe.dto.response.DeleteFavoriteParkingZoneResponse;
-import org.example.honorsparkingbe.repository.FavoriteParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.FavoriteParkingZoneRepository;
 import org.example.honorsparkingbe.service.FavoriteParkingZoneService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

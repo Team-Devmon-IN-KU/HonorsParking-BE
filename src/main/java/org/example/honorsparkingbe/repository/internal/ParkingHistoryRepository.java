@@ -1,4 +1,4 @@
-package org.example.honorsparkingbe.repository;
+package org.example.honorsparkingbe.repository.internal;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -23,5 +23,6 @@ public interface ParkingHistoryRepository extends JpaRepository<ParkingHistoryEn
       @Param("memberId") Long memberId);
 
   void deleteAllByDeleteAtBefore(LocalDateTime deleteAt);
-    ParkingHistoryEntity findFirstByMemberEntityIdOrderByEntranceTimeDesc(Long memberId);
+
+  ParkingHistoryEntity findFirstByMemberEntityIdOrderByEntranceTimeDesc(Long memberId);
 }

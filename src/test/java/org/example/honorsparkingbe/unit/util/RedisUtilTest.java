@@ -16,7 +16,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
@@ -27,8 +26,8 @@ import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Testcontainers
-@ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:config/application-test.yml")
+//@ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
 /**
@@ -53,8 +52,14 @@ public class RedisUtilTest {
 
   @BeforeAll
   static void setUp() {
-    System.setProperty("spring.data.redis.host", redis.getContainerIpAddress());
-    System.setProperty("spring.data.redis.port", redis.getFirstMappedPort().toString());
+    String host = redis.getHost();
+    String port = redis.getFirstMappedPort().toString();
+
+    System.out.println("✅ Redis Host: " + host);
+    System.out.println("✅ Redis Port: " + port);
+
+    System.setProperty("spring.data.redis.host", host);
+    System.setProperty("spring.data.redis.port", port);
   }
 
   @AfterEach

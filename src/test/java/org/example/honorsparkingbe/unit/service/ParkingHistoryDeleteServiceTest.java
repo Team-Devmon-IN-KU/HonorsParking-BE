@@ -11,7 +11,7 @@ import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
 import org.example.honorsparkingbe.dto.DeleteParkingHistoryDTO;
 import org.example.honorsparkingbe.dto.request.ParkingHistoryDeleteRequest;
 import org.example.honorsparkingbe.dto.response.ParkingHistoryDeleteResponse;
-import org.example.honorsparkingbe.repository.ParkingHistoryRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.example.honorsparkingbe.service.ParkingHistoryService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -23,14 +23,14 @@ import org.example.honorsparkingbe.domain.entity.PayEntity;
 import org.example.honorsparkingbe.domain.enums.LoginPlatform;
 import org.example.honorsparkingbe.domain.enums.MemberRole;
 import org.example.honorsparkingbe.domain.enums.PaymentType;
-import org.example.honorsparkingbe.repository.CarRepository;
-import org.example.honorsparkingbe.repository.CityRepository;
-import org.example.honorsparkingbe.repository.DistrictRepository;
-import org.example.honorsparkingbe.repository.EupMyeonDongRepository;
-import org.example.honorsparkingbe.repository.MemberRepository;
-import org.example.honorsparkingbe.repository.ParkingHistoryRepository;
-import org.example.honorsparkingbe.repository.ParkingZoneRepository;
-import org.example.honorsparkingbe.repository.PayRepository;
+import org.example.honorsparkingbe.repository.internal.CarRepository;
+import org.example.honorsparkingbe.repository.internal.CityRepository;
+import org.example.honorsparkingbe.repository.internal.DistrictRepository;
+import org.example.honorsparkingbe.repository.internal.EupMyeonDongRepository;
+import org.example.honorsparkingbe.repository.internal.MemberRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.PayRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:config/application-test.yml")
+@TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
 public class ParkingHistoryRepositoryTest {
