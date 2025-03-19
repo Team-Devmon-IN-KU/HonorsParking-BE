@@ -37,7 +37,7 @@ dependencies {
     compileOnly 'org.projectlombok:lombok'
 
     // runtimeOnly 'com.mysql:mysql-connector-j'
-    runtimeOnly 'mysql:mysql-connector-java'
+    runtimeOnly 'mysql:mysql-connector-java:8.0.33'
 
     annotationProcessor 'org.projectlombok:lombok'
     implementation 'org.springframework.boot:spring-boot-starter-validation'
@@ -52,7 +52,7 @@ dependencies {
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
     // testRuntimeOnly 'com.mysql:mysql-connector-j'
-    testRuntimeOnly 'mysql:mysql-connector-java'
+    testRuntimeOnly 'mysql:mysql-connector-java:8.0.33'
 
     //  JPA 레포지토리를 위한 인메모리 테스트용 디비
     testImplementation 'com.h2database:h2'
