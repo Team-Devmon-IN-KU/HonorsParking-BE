@@ -74,9 +74,5 @@ jobs:
           key: ${{ secrets.EC2_PRIVATE_KEY }}
           script_stop: true
           script: |
-          #  docker stop honorsparking-server || true
-          #  docker rm honorsparking-server || true
-            docker pull ${{ steps.login-ecr.outputs.registry }}/honorsparking-server:latest
-          #  docker run -d --name honorsparking-server -p 8080:8080 ${{ steps.login-ecr.outputs.registry }}/honorsparking-server:latest
             docker-compose pull backend  # 최신 백엔드 이미지 가져오기
             docker-compose up -d backend  # 최신 백엔드 컨테이너 실행 (자동 업데이트)
