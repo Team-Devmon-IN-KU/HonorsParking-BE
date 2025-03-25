@@ -58,6 +58,32 @@ public class AlarmController {
         }
     }
 
+    @GetMapping("/alarmUnread")
+    public ResponseEntity<Map<String, Object>> getUnreadAlarms(
+            @RequestParam(required = false) String category,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
+
+        try {
+            Long memberId = getCurrentMemberId();
+
+            // JPA는 page 0부터 시작
+            int adjustedPage = Math.max(page - 1, 0);
+
+            Map<String, Object> response = alarmService.getUnreadAlarms(memberId, category, adjustedPage, size);
+
+            Map<String, Object> pagination = new HashMap<>((Map<String, Object>) response.get("pagination"));
+            pagination.put("currentPage", (int) pagination.get("currentPage") + 1);
+
+            response = new HashMap<>(response);
+            response.put("pagination", pagination);
+
+            return ResponseEntity.ok(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
+        }
+    }
+
     /**
      * 회원 알람 읽기
      * PUT /api/v1/alarm

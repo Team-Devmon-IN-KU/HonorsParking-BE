@@ -2,6 +2,7 @@ package org.example.honorsparkingbe.repository;
 
 import org.example.honorsparkingbe.domain.entity.AlarmEntity;
 import org.example.honorsparkingbe.domain.enums.AlarmType;
+import org.example.honorsparkingbe.domain.enums.IsRead;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -20,6 +21,12 @@ public interface AlarmRepository extends JpaRepository<AlarmEntity, Long> {
 
     // 특정 회원의 특정 알람 유형 조회
     Page<AlarmEntity> findByMemberEntityIdAndAlarmType(Long memberId, AlarmType alarmType, Pageable pageable);
+
+    // 읽지 않은 알람만 조회
+    Page<AlarmEntity> findByMemberEntityIdAndIsRead(Long memberId, IsRead isRead, Pageable pageable);
+
+    // 읽지 않은 알람 + 카테고리
+    Page<AlarmEntity> findByMemberEntityIdAndAlarmTypeAndIsRead(Long memberId, AlarmType alarmType, IsRead isRead, Pageable pageable);
 
     // 여러 알람 ID를 읽음 상태로 업데이트 (READ 상태가 아닌 알람만)
     @Modifying

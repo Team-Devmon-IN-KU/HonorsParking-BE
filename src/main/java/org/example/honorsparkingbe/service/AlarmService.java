@@ -4,6 +4,7 @@ import jakarta.transaction.Transactional;
 import org.example.honorsparkingbe.domain.entity.AlarmEntity;
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.enums.AlarmType;
+import org.example.honorsparkingbe.domain.enums.IsRead;
 import org.example.honorsparkingbe.dto.AlarmResponse;
 import org.example.honorsparkingbe.repository.AlarmRepository;
 import org.example.honorsparkingbe.repository.MemberRepository;
@@ -64,6 +65,42 @@ public class AlarmService {
                 )
         );
     }
+
+    public Map<String, Object> getUnreadAlarms(Long memberId, String category, int page, int size) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+
+        Page<AlarmEntity> alarmPage;
+        IsRead unreadStatus = IsRead.UNREAD;
+
+        if (category != null) {
+            boolean isValidCategory = Arrays.stream(AlarmType.values())
+                    .anyMatch(type -> type.name().equalsIgnoreCase(category));
+
+            if (!isValidCategory) {
+                throw new IllegalArgumentException("Invalid category value: " + category);
+            }
+
+            AlarmType alarmType = AlarmType.valueOf(category.toUpperCase());
+            alarmPage = alarmRepository.findByMemberEntityIdAndAlarmTypeAndIsRead(memberId, alarmType, unreadStatus, pageable);
+        } else {
+            alarmPage = alarmRepository.findByMemberEntityIdAndIsRead(memberId, unreadStatus, pageable);
+        }
+
+        List<AlarmResponse> alarmList = alarmPage.getContent().stream()
+                .map(AlarmResponse::new)
+                .collect(Collectors.toList());
+
+        return Map.of(
+                "alarms", alarmList,
+                "pagination", Map.of(
+                        "currentPage", alarmPage.getNumber(),
+                        "totalPages", alarmPage.getTotalPages(),
+                        "pageSize", alarmPage.getSize(),
+                        "totalItems", alarmPage.getTotalElements()
+                )
+        );
+    }
+
 
     // 회원 알람 읽기
     // PUT /api/v1/alarm
