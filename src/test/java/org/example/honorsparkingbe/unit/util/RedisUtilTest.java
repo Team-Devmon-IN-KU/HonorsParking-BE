@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.transaction.annotation.Transactional;
 import org.testcontainers.containers.GenericContainer;
@@ -26,7 +27,7 @@ import org.testcontainers.utility.DockerImageName;
 
 @SpringBootTest
 @Testcontainers
-//@ActiveProfiles("test")
+@ActiveProfiles("test")
 @TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
