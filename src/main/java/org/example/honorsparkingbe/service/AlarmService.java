@@ -101,7 +101,6 @@ public class AlarmService {
         );
     }
 
-
     // 회원 알람 읽기
     // PUT /api/v1/alarm
     @Transactional

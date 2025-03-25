@@ -107,6 +107,34 @@ public class AlarmServiceTest {
     }
 
     /**
+     * 읽지 않은 알람만 조회
+     */
+    @Test
+    @DisplayName("읽지 않은 알람만 조회")
+    void testGetUnreadAlarms_Success() {
+        // Given
+        Long memberId = 1L;
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+
+        List<AlarmEntity> unreadAlarms = List.of(
+                createAlarm(1L, "읽지 않은 알람", IsRead.UNREAD, AlarmType.INOUT)
+        );
+        Page<AlarmEntity> alarmPage = new PageImpl<>(unreadAlarms, pageable, unreadAlarms.size());
+
+        when(alarmRepository.findByMemberEntityIdAndIsRead(memberId, IsRead.UNREAD, pageable))
+                .thenReturn(alarmPage);
+
+        // When
+        Map<String, Object> response = alarmService.getUnreadAlarms(memberId, null, 0, 10);
+
+        // Then
+        assertThat(response).isNotNull();
+        assertThat(((List<?>) response.get("alarms")).size()).isEqualTo(1);
+        assertThat(((List<?>) response.get("alarms")).get(0)).isInstanceOf(AlarmResponse.class);
+    }
+
+
+    /**
      * 4. 알람 읽기
      */
     @Test

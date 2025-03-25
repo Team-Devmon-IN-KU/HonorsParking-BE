@@ -1,6 +1,7 @@
 package org.example.honorsparkingbe.unit.controller;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -99,12 +100,40 @@ public class AlarmControllerAuthTest {
                 .andExpect(jsonPath("$.alarms[0].content").value("Test Alarm"));
     }
 
+    /**
+     * 읽지 않은 알람만 조회
+     */
+    @Test
+    @DisplayName("읽지 않은 알람 목록 조회 성공")
+    @WithMockUser(username = "testuser", roles = {"USER"})
+    void testGetUnreadAlarms_Success() throws Exception {
+        // Given
+        Map<String, Object> mockResponse = Map.of(
+                "pagination", Map.of("currentPage", 0),
+                "alarms", List.of(
+                        Map.of("id", 1L, "content", "미확인 알람", "isRead", "UNREAD")
+                )
+        );
+
+        when(alarmService.getUnreadAlarms(any(Long.class), any(), anyInt(), anyInt()))
+                .thenReturn(mockResponse);
+
+        // When & Then
+        mockMvc.perform(get("/api/v1/alarmUnread")
+                        .param("category", "INOUT")
+                        .param("page", "1")
+                        .param("size", "10"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.pagination.currentPage").value(1)) // 서비스에서는 0 기반, 컨트롤러에서 +1 처리됨
+                .andExpect(jsonPath("$.alarms[0].isRead").value("UNREAD"));
+    }
 
 
 
-/**
- * 4. 알람 전체 삭제 테스트 (DELETE /api/v1/alarm/all)
- */
+
+    /**
+    * 4. 알람 전체 삭제 테스트 (DELETE /api/v1/alarm/all)
+    */
     @Test
     @DisplayName("알람 전체 삭제 성공")
     @WithMockUser(username = "testuser", roles = {"USER"}) // ✅ 인증된 사용자 추가
