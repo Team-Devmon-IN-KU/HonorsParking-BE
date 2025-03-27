@@ -12,11 +12,11 @@ import org.example.honorsparkingbe.domain.entity.EupMyeonDongEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingFeeRuleEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
 import org.example.honorsparkingbe.domain.enums.CarType;
-import org.example.honorsparkingbe.repository.CityRepository;
-import org.example.honorsparkingbe.repository.DistrictRepository;
-import org.example.honorsparkingbe.repository.EupMyeonDongRepository;
-import org.example.honorsparkingbe.repository.ParkingFeeRuleRepository;
-import org.example.honorsparkingbe.repository.ParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.CityRepository;
+import org.example.honorsparkingbe.repository.internal.DistrictRepository;
+import org.example.honorsparkingbe.repository.internal.EupMyeonDongRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingFeeRuleRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @DataJpaTest
 @ActiveProfiles("test")
-@TestPropertySource(locations = "classpath:config/application-test.yml")
+@TestPropertySource(locations = "classpath:application-test.yml")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
 public class ParkingFeeRuleRepositoryTest {

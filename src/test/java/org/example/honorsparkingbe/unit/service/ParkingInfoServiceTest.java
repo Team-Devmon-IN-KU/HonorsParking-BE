@@ -24,8 +24,8 @@ import org.example.honorsparkingbe.dto.ParkingZoneDTO;
 import org.example.honorsparkingbe.dto.ParkingZoneListDTO;
 import org.example.honorsparkingbe.dto.request.ParkingZoneListRequest;
 import org.example.honorsparkingbe.dto.response.ParkingZoneListResponse;
-import org.example.honorsparkingbe.repository.FavoriteParkingZoneRepository;
-import org.example.honorsparkingbe.repository.ParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.FavoriteParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.example.honorsparkingbe.service.ParkingZoneInfoService;
 import org.example.honorsparkingbe.util.converter.dto.ParkingFeeRuleDTOConverter;
 import org.example.honorsparkingbe.util.converter.dto.ParkingZoneDTOConverter;
@@ -40,8 +40,10 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.context.ActiveProfiles;
 
 @ExtendWith(MockitoExtension.class)
+@ActiveProfiles("test")
 public class ParkingInfoServiceTest {
 
   @Mock

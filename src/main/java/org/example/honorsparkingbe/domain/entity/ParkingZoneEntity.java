@@ -2,8 +2,6 @@ package org.example.honorsparkingbe.domain.entity;
 
 
 import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Convert;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
@@ -19,7 +17,6 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.example.honorsparkingbe.util.converter.persistence.JsonIntegerListConverter;
 
 @Entity
 @Getter
@@ -71,9 +68,10 @@ public class ParkingZoneEntity {
 //  @Column(name = "floor")
 //  private List<Integer> floor;
 
-  @Convert(converter = JsonIntegerListConverter.class)
-  @Column(name = "floors", columnDefinition = "TEXT")  // MySQL: TEXT, PostgreSQL: JSONB 고려 가능
-  private List<Integer> floors;
+  // 센터 디비에 층수 정보가 없는 관계로 일시 제외
+//  @Convert(converter = JsonIntegerListConverter.class)
+//  @Column(name = "floors", columnDefinition = "TEXT")  // MySQL: TEXT, PostgreSQL: JSONB 고려 가능
+//  private List<Integer> floors;
 
   // 최대 요금
   private Integer maxCost;

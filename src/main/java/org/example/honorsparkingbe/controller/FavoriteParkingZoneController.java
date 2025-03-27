@@ -1,5 +1,7 @@
 package org.example.honorsparkingbe.controller;
 
+import static org.example.honorsparkingbe.security.util.SecurityUtil.getCurrentUserId;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.honorsparkingbe.dto.AddFavoriteParkingZoneDTO;
@@ -30,13 +32,11 @@ public class FavoriteParkingZoneController {
   public ResponseEntity<AddFavoriteParkingZoneResponse> createFavoriteParkingZone(
       @Valid @RequestBody AddFavoriteParkingZoneRequest request) {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
-
+    Long userId = getCurrentUserId();
     return ResponseEntity.ok(
         favoriteParkingZoneService.addFavoriteParkingZone(
             AddFavoriteParkingZoneDTO.builder()
-                .userId(customUserDetails.getId())
+                .userId(userId)
                 .addFavoriteParkingZoneRequest(request)
                 .build()
         )

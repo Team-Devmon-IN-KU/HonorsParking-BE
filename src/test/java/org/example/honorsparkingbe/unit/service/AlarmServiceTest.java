@@ -6,15 +6,13 @@ import static org.mockito.Mockito.*;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
 import org.example.honorsparkingbe.domain.entity.AlarmEntity;
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.enums.AlarmType;
 import org.example.honorsparkingbe.domain.enums.IsRead;
-import org.example.honorsparkingbe.dto.AlarmResponse;
-import org.example.honorsparkingbe.repository.AlarmRepository;
-import org.example.honorsparkingbe.repository.MemberRepository;
+import org.example.honorsparkingbe.repository.internal.AlarmRepository;
+import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.example.honorsparkingbe.service.AlarmService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +51,7 @@ public class AlarmServiceTest {
     void testGetAlarms_Success() {
         // Given
         Long memberId = 1L;
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
         List<AlarmEntity> alarmEntities = List.of(
                 createAlarm(1L, "테스트 알람", IsRead.UNREAD, AlarmType.INOUT),
@@ -94,7 +92,7 @@ public class AlarmServiceTest {
     void testGetAlarms_NoAlarms_ShouldReturnEmptyList() {
         // Given
         Long memberId = 1L;
-        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("id").descending());
 
         Page<AlarmEntity> emptyPage = new PageImpl<>(List.of(), pageable, 0);
         when(alarmRepository.findByMemberEntityId(memberId, pageable)).thenReturn(emptyPage);
@@ -222,7 +220,7 @@ public class AlarmServiceTest {
     void testGetAlarms_Pagination() {
         // Given
         Long memberId = 1L;
-        Pageable pageable = PageRequest.of(1, 5, Sort.by("createdAt").descending()); // 1페이지, 5개씩 가져오기
+        Pageable pageable = PageRequest.of(1, 5, Sort.by("id").descending()); // 1페이지, 5개씩 가져오기
 
         List<AlarmEntity> alarmEntities = List.of(
                 createAlarm(6L, "알람1", IsRead.UNREAD, AlarmType.INOUT),

@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
 import org.example.honorsparkingbe.dto.DeleteParkingHistoryDTO;
 import org.example.honorsparkingbe.dto.response.ParkingHistoryDeleteResponse;
-import org.example.honorsparkingbe.repository.ParkingHistoryRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

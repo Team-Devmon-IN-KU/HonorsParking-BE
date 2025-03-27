@@ -6,10 +6,10 @@ import org.example.honorsparkingbe.domain.entity.CityEntity;
 import org.example.honorsparkingbe.domain.entity.DistrictEntity;
 import org.example.honorsparkingbe.domain.entity.EupMyeonDongEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
-import org.example.honorsparkingbe.repository.CityRepository;
-import org.example.honorsparkingbe.repository.DistrictRepository;
-import org.example.honorsparkingbe.repository.EupMyeonDongRepository;
-import org.example.honorsparkingbe.repository.ParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.CityRepository;
+import org.example.honorsparkingbe.repository.internal.DistrictRepository;
+import org.example.honorsparkingbe.repository.internal.EupMyeonDongRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

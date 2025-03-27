@@ -1,15 +1,14 @@
 package org.example.honorsparkingbe.controller;
 
+import static org.example.honorsparkingbe.security.util.SecurityUtil.getCurrentUserId;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.example.honorsparkingbe.dto.ParkingZoneListDTO;
 import org.example.honorsparkingbe.dto.request.ParkingZoneListRequest;
 import org.example.honorsparkingbe.dto.response.ParkingZoneListResponse;
-import org.example.honorsparkingbe.security.CustomUserDetails;
 import org.example.honorsparkingbe.service.ParkingZoneInfoService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -33,14 +32,13 @@ public class ParkingZoneInfoController {
       @Valid @ModelAttribute ParkingZoneListRequest request
   ) {
 
-    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-    CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+    Long userId = getCurrentUserId();
 
     ParkingZoneListResponse response = parkingZoneInfoService
         .getParkingZones(
             ParkingZoneListDTO.builder()
                 .parkingZoneListRequest(request)
-                .userId(customUserDetails.getId())
+                .userId(userId)
                 .build()
         );
     return ResponseEntity.ok(response);

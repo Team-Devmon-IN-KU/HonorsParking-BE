@@ -1,4 +1,4 @@
-package org.example.honorsparkingbe.repository;
+package org.example.honorsparkingbe.repository.internal;
 
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

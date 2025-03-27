@@ -1,0 +1,170 @@
+[33m21740a4[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mfeat/alarm-unread[m[33m, [m[1;31morigin/feat/alarm-unread[m[33m)[m merge with develop
+[33m9486b1b[m[33m ([m[1;31morigin/develop[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mdevelop[m[33m)[m Merge pull request #43 from Team-Devmon-IN-KU/feat/alarmSort
+[33m7f53cc7[m for merge
+[33m8ba72c6[m fix: feat/integrationtest branch 충돌 문제 해결완료
+[33m3bdbeef[m fix: conflict and test error resolve
+[33m08cbd25[m fix: test-failed
+[33m142352e[m fix: conflict
+[33m5e3d970[m Create README.md
+[33m19a97b5[m fix: internal DB config jpa설정 세팅
+[33mdf1b6ed[m fix: ignore .DS files
+[33m0a88dc7[m feat: muliti-DB환경 구축 및 테스트 application파일 통일 시킴
+[33m6056a6c[m fix: user-context-일반유저-Oauth유저 principal가져오는 로직 수정
+[33m845ae7a[m feat: alarm unread test-code
+[33mc47ec57[m fix: Change sort criteria to id
+[33m24c4e93[m feat: alarm unread
+[33mfecd241[m Merge pull request #34 from Team-Devmon-IN-KU/feat/alarmAPI
+[33m963a25f[m Merge branch 'develop' into feat/alarmAPI
+[33m68f435b[m fix: AlarmRepositoryTest
+[33m9a0fd64[m fix: Change MockBean to InjectMock and split AlarmControllerTest
+[33m0ea0e59[m docs: integration-test application file git ignore 해재
+[33mfb65e3f[m feat: integration-test완료 및 환경세팅 완료
+[33m5ade93f[m feat: integration-테스트 부모 클래스 설정 완료
+[33mc642e4a[m feat: 통합 테스트 환경에서 인프라 커넥션 성공
+[33m9eda137[m feat: test-container와 인프라 연결 성공
+[33m16e97f3[m ref: Eliminate redundant exception handling
+[33m0ec1dab[m Merge pull request #37 from Team-Devmon-IN-KU/feat/idCheck
+[33m7cc51ba[m fix: Fixing the problem of not receiving cookies
+[33m55d9b76[m[33m ([m[1;31morigin/feat/idCheck[m[33m, [m[1;32mfeat/idCheck[m[33m)[m Merge branch 'develop' into feat/idCheck
+[33m32212ed[m feat: ID double check test code
+[33m0e81e66[m feat: id double check
+[33m2a2c5e5[m feat: 임시 parking-fee-pay before API 개발 완료
+[33m6f07e73[m feat: Redis test환경 구축 성공
+[33m9621bff[m feat: payment-info-controller작성 완료
+[33m15e46af[m Merge pull request #35 from Team-Devmon-IN-KU/feature/Billing
+[33m0878ccf[m[33m ([m[1;31morigin/feature/Billing[m[33m)[m fix: test code current time
+[33mda47fbd[m merge: merge
+[33m146982a[m test: before pull develop
+[33m6f0607f[m feat: swagger를 통한 API 명세서 세팅
+[33m75f936d[m feat: pr-check 업데이트 - 최신 브랜치 확인하는 동작 추가
+[33me81636b[m feat: PR-checking on branch up-to-date
+[33m1de0335[m feat: 주차장 thumbnail 추가
+[33m5490105[m feat: PR시에 테스트 코드가 가능하게 추가
+[33m958fd89[m fix: 로그아웃 테스트 동작 안해서 제거
+[33mfcb7406[m refactoring: 주차장 리스트 조회 API N+1문제 해결 완료 및 오류 검출 해결 완료
+[33m078ff6f[m fix: GET parkingzone Info Service 테스트 코드
+[33m8813515[m fix: GET Parking-zone-list 서비스 오류 발견 후 해결 및 테스트 코드 작성
+[33mabed62a[m refactor: GET parkingInfo API N+1 최적화 완료
+[33m0a6d97d[m fix: ParkingZone엔티티와 연관관계를 가지던 여러 테이블들을 조회시 ParkingFeeRule에 대한 N+1문제 해결
+[33m995b0f6[m refactor: Favorite-ParkingZone-Service트랜잭션 최적화 및 SQL 쿼리 최적화
+[33mbb0f342[m[33m ([m[1;31morigin/feat/alarmAPI[m[33m)[m ref: Uniform annotation format
+[33m2d1abbd[m commit for merge
+[33m229e594[m feat: controller, service test
+[33m3ffc70e[m feat: Test code
+[33m8a4023e[m feat: add dummy data
+[33ma2506ae[m fix: pathVariable delete
+[33m931e6be[m feat: currentInfo ver1
+[33mb86b6c8[m Merge branch 'feat/alarmAPI' of https://github.com/Team-Devmon-IN-KU/HonorsParking-BE into feat/alarmAPI
+[33m93b26e0[m save for desktop work
+[33m99d42fb[m Merge branch 'develop' into feat/alarmAPI
+[33m94ce7c9[m fix: use session member id
+[33m480ae15[m feat: before calculate
+[33mfed88fe[m 250212
+[33mdbd75d7[m Merge pull request #28 from Team-Devmon-IN-KU/feat/redirect
+[33mb1ba96e[m[33m ([m[1;31morigin/feat/redirect[m[33m)[m fix: Logout method GET
+[33m87377c7[m feat: get proper tuple
+[33md086830[m Merge branch 'develop' into feat/alarmAPI
+[33m5731319[m Merge pull request #27 from Team-Devmon-IN-KU/feat/redirect
+[33m3043b4d[m fix: Logout method POST, endpoint /api/v1/logout
+[33m08855c7[m fix: /logout 접근 허용
+[33m6dd9da9[m fix: use session data
+[33m6918dc7[m feat: logic comment
+[33mb93e9dc[m feat: delete favorite-parking-zone API 개발 완료
+[33m63e52c6[m feat: delete-bookmark-service
+[33mfc80b87[m feat: service-code
+[33md89026e[m feat: bookmark-parkingzone-controller
+[33mf1cbee1[m Merge branch 'develop' into feat/alarmAPI
+[33m06a2a56[m Merge pull request #25 from Team-Devmon-IN-KU/feat/redirect
+[33m773844c[m feat: 비인가 접근 시 401 반환
+[33mbafe678[m Merge branch 'develop' into feat/redirect
+[33m9d398dc[m Merge branch 'develop' into feat/alarmAPI
+[33m538efdf[m feat: 비인가 접근 시 401 반환
+[33m81e09ea[m Merge branch 'feat/alarmAPI' of https://github.com/Team-Devmon-IN-KU/HonorsParking-BE into feat/alarmAPI
+[33m929e068[m fix: 정밀도 반영 제대로 안되서 수정했씁니다.
+[33me4effa9[m fix:CI환경과 로컬환경(Mac)의 LocalDateTime차이 에러 해결
+[33m62cc100[m feat: 컨트롤러 테스트 추가 및 개선사항 반영
+[33mf85a0b5[m fix: controller Advice와 parkingDeleteHistory controller
+[33mc96d0d8[m feat: Hisotry-Delete API 개발 완료
+[33m4ab0158[m feat: 레포지토리 메서드 완성 및 스키마 오류 사항 수정
+[33m40d80cd[m 파킹히스토리 delete API 컨트롤러 완성 및 security CustomUserDetail수정
+[33m1448e77[m feat: merge
+[33m1704000[m feat: json form
+[33ma958248[m Merge pull request #20 from Team-Devmon-IN-KU/feat/corsConfig
+[33md7fbafd[m[33m ([m[1;31morigin/feat/corsConfig[m[33m)[m fix: edit annotation
+[33mea70019[m feat: add vercel domain
+[33m337a27d[m feat: Add ors settings
+[33m5a6f44a[m feat: isParking check
+[33m6d3589c[m feat: merge develop
+[33m4fe49a9[m Merge branch 'develop' into feat/alarmAPI
+[33m1822a0e[m fix: delete readAt
+[33mfbe0f52[m feat: get Parking History
+[33m4909181[m fix: add session info(id)
+[33m493051e[m fix: session info added(id)
+[33m83569c9[m fix: session info
+[33ma6fc111[m feat: Transaction add in JoinProcess
+[33m407dc55[m Merge branch 'feat/alarmAPI' of https://github.com/Team-Devmon-IN-KU/HonorsParking-BE into feat/alarmAPI
+[33ma905a4c[m Merge pull request #17 from Team-Devmon-IN-KU/feat/cicdFix
+[33ma250d85[m[33m ([m[1;31morigin/feat/cicdFix[m[33m)[m fix: image name
+[33mb175cd4[m Merge pull request #16 from Team-Devmon-IN-KU/feat/cicdFix
+[33md48ff35[m fix: cicd
+[33m56ac65a[m fix: cicd_script
+[33m18af387[m fix: 빌드 성공
+[33m031afdd[m fix: secret-file-name2
+[33m852345d[m fix: secret-file-name
+[33mee5888a[m feat: cicd 스크립트 재작성
+[33m174b17a[m fix: gradlew 사라짐 문제 해결
+[33me7588f2[m Merge pull request #8 from Team-Devmon-IN-KU/feat/parkingAPI
+[33mfa8fdd5[m feat: Add delete selected alarms & all alarms
+[33mac4f2eb[m fix: UpdateAlarm response format change
+[33m7d168e2[m fix: Edit AlarmResponse dto
+[33m381db23[m feat: security설정 전환에따른 테스트코드 수정
+[33mf786e43[m fix: conflict
+[33m981938e[m Merge pull request #9 from Team-Devmon-IN-KU/feature/OAuth2
+[33m1cbf837[m feat: parkingInfo API
+[33mb341ceb[m faet: service코드 로직 완성
+[33mb0b4d67[m feat: favorite_parkingzone_repository_method
+[33mcb48695[m[33m ([m[1;31morigin/feature/OAuth2[m[33m)[m fix: PR Feedback 4
+[33m9355597[m fix: PR Feedback3
+[33mf6e3787[m fix: 250131 PR Feedback2
+[33m1641510[m fix: 250131 PR Feedback
+[33m86342b9[m feat: parkingZone-repository-method
+[33m11dd7d9[m feat: test code
+[33m030190f[m feat: test code
+[33m30cfe9d[m fix: join process json change
+[33m55d85db[m test: new repository test
+[33m14b2005[m feat: Add PUT alarm api
+[33m82b4b86[m change docker-compose.yml
+[33me18299d[m feat: Add GET alarm api
+[33m45ea98c[m Merge branch 'feat/cicd' into feat/alarmAPI
+[33m34918cb[m fix: before test code
+[33mb81fa7d[m fix: session cookie name change
+[33m955d0df[m fix: loginProc uri change
+[33m511e521[m fix: kakao can not convert null to integer
+[33mbcf1eb6[m fix: OAuth2 json success
+[33mba21132[m fix: normal login process
+[33m1796d39[m fix: get session info
+[33mf741647[m fix: uri
+[33m21684bf[m feat: controller-advice를 통한 전역 에러처리 완료
+[33m6d8d10a[m fix: serializable entity
+[33m3c31c1f[m fix: naver OAuth2 join process
+[33m10ad6ea[m fix: Join Process
+[33m10c51c3[m After Merge Safe Check
+[33m45a38c0[m Merge remote-tracking branch 'origin/develop' into feature/OAuth2
+[33mb5698ac[m fix: honors parking database
+[33m4fa9a68[m feat: honors parking database
+[33m358de41[m fix: New desktop test
+[33mbaaa815[m feat: Check Current Session Info
+[33m588eca8[m feat: Toss payment
+[33ma288488[m feat: OAuth2 Update
+[33mcb82eca[m feat: Redis Add
+[33m2a4b3da[m feat: OAuth Custom
+[33mcfa1547[m[33m ([m[1;31morigin/feat/cicd[m[33m)[m fix: Error response from daemon: No such container
+[33m1fb5926[m fix: An image does not exist locally with the tag: ~
+[33m30598e6[m fix: Change ECR repository name
+[33mc17477e[m fix: Change ECR repository name
+[33m584ee29[m fix: Use mkdir -p for non-exist directory
+[33m46ca9eb[m fix: Catch merge conflict
+[33m32f8c95[m fix: Use mkdir -p for non-exist directory
+[33mb8c2a25[m feat: Deploy to AWS EC2 Using Docker, AWS ECR and Github Actions(CI/CD Pipelines)
+[33m7a1c81b[m feat: Deploy to AWS EC2 Using Docker, AWS ECR and Github Actions(CI/CD Pipelines)
+[33mb80e84a[m initial-commit

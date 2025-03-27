@@ -31,7 +31,6 @@ public class ParkingZoneDTOConverter {
         .eupMyeonDongName(parkingZoneEntity.getEupMyeonDongEntity().getName())
         .electricCarSpaceCount(parkingZoneEntity.getElectricCarSpaceCount())
         .size(parkingZoneEntity.getSize())
-        .floor(parkingZoneEntity.getFloors())
         .maxCost(parkingZoneEntity.getMaxCost())
         .parkingFeeRules(parkingFeeRuleList)
         .thumbnail(parkingZoneEntity.getThumbnailUrl())

@@ -1,4 +1,4 @@
-package org.example.honorsparkingbe.repository;
+package org.example.honorsparkingbe.repository.internal;
 
 import org.example.honorsparkingbe.domain.entity.FavoriteParkingZoneEntity;
 import org.springframework.data.domain.Page;
