@@ -1,8 +1,14 @@
 package org.example.honorsparkingbe.dummy.createData;
 
 import jakarta.annotation.PostConstruct;
+import java.time.LocalDateTime;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.example.honorsparkingbe.domain.entity.*;
+import org.example.honorsparkingbe.domain.entity.CarEntity;
+import org.example.honorsparkingbe.domain.entity.MemberEntity;
+import org.example.honorsparkingbe.domain.entity.ParkingFeeRuleEntity;
+import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
+import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
 import org.example.honorsparkingbe.domain.enums.CarType;
 import org.example.honorsparkingbe.domain.enums.LoginPlatform;
 import org.example.honorsparkingbe.domain.enums.MemberRole;
@@ -16,9 +22,6 @@ import org.springframework.context.annotation.DependsOn;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -44,11 +47,11 @@ public class CreateDummyDataForCurrentInfo {
     System.out.println("Inserting dummy data for the first time...");
 
     // Car 데이터 추가
-    CarEntity car1 = CarEntity.builder().carNumber("12ga 3456").carType(CarType.COMPACT)
+    CarEntity car1 = CarEntity.builder().carNumber("12가 3456").carType(CarType.COMPACT)
         .isElectric(false).build();
-    CarEntity car2 = CarEntity.builder().carNumber("30na 6789").carType(CarType.MIDSIZE)
+    CarEntity car2 = CarEntity.builder().carNumber("12나 3456").carType(CarType.MIDSIZE)
         .isElectric(true).build();
-    CarEntity car3 = CarEntity.builder().carNumber("56da 9012").carType(CarType.FULLSIZE)
+    CarEntity car3 = CarEntity.builder().carNumber("12다 3456").carType(CarType.FULLSIZE)
         .isElectric(false).build();
     carRepository.saveAll(List.of(car1, car2, car3));
 
