@@ -19,7 +19,6 @@ import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.example.honorsparkingbe.repository.internal.PayRepository;
-import org.example.honorsparkingbe.util.VehicleNumberFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,18 +32,13 @@ public class SyncInoutService {
   private final ParkingZoneRepository parkingZoneRepository;
   private final MemberRepository memberRepository;
   private final PayRepository payRepository;
-  private final VehicleNumberFilter vehicleNumberFilter;
 
   @Transactional
   public SyncInoutResponse syncParkingHistory(SyncInoutRequest request) {
 
-    // 요청받은 차량 번호 리스트 추출 및 필터링
-    List<String> vehicleNumbers = request.getInoutList().stream()
-        .map(inout -> inout.getVehicleNumber())
-        .toList();
-
-    // 1. 한 번의 쿼리로 모든 차량 정보 조회
-    List<CarEntity> registeredCars = carRepository.findAllByCarNumberIn(vehicleNumbers);
+    // 1. 요청받은 차량 번호 리스트 추출 후 차량 번호 조회
+    List<CarEntity> registeredCars = carRepository.findAllByCarNumberIn(
+        request.getInoutList().stream().map(inout -> inout.getVehicleNumber()).toList());
 
     // 회원 차량의 입출차 기록이 없다면 빈배열 반환
     if (registeredCars.isEmpty()) {
@@ -64,7 +58,7 @@ public class SyncInoutService {
 
     // 2. DB에서 차량 번호 리스트에 해당하는 회원 엔티티 조회
     List<MemberEntity> memberEntities = memberRepository.findAllByCarEntity_CarNumberIn(
-        vehicleNumbers);
+        registeredCars.stream().map(carEntity -> carEntity.getCarNumber()).toList());
 
     // 3. 차량 번호(CarNumber)를 Key로, MemberEntity를 Value로 하는 Map 생성 (검색을 위한)
     Map<String, MemberEntity> carNumberToMemberMap = memberEntities.stream()
@@ -85,16 +79,19 @@ public class SyncInoutService {
 
     // 주차장을 Map<Long, ParkingZoneEntity> 형태로 변환
     Map<Long, ParkingZoneEntity> parkingZoneMap = parkingZones.stream()
-        .collect(Collectors.toMap(ParkingZoneEntity::getId, zone -> zone));
+        .collect(Collectors.toMap(
+            ParkingZoneEntity::getId, // Key ParkingZone ID
+            zone -> zone // ParkingZone Entitiy
+        ));
 
     // PayEntity생성 후 DB에 저장
-    List<PayEntity> payEntities = createPayEntities(filteredNewMemberInoutList,
-        carNumberToMemberMap);
-    List<PayEntity> savedPayEntities = payRepository.saveAll(payEntities);
+    List<PayEntity> savedPayEntities = payRepository.saveAll(
+        createPayEntities(filteredNewMemberInoutList, carNumberToMemberMap));
+
     // 검색 속도를 위한 pay Map생성
     Map<Long, PayEntity> entryIdToPayEntityMap = savedPayEntities.stream()
         .collect(Collectors.toMap(
-            payEntity -> payEntity.getId(),  // PayEntity의 id를 entryId로 사용
+            payEntity -> payEntity.getEntryId(),  // Key entryId로 사용
             payEntity -> payEntity           // PayEntity를 값으로 사용
         ));
 
@@ -108,26 +105,7 @@ public class SyncInoutService {
     );
 
     // parkingHistoryEntities 배열의 내용을 출력하는 부분
-    parkingHistoryEntities.forEach(parkingHistoryEntity -> {
-      System.out.println("ParkingHistoryEntity ID: " + parkingHistoryEntity.getId());
-      System.out.println("Car ID: " + parkingHistoryEntity.getCarEntity().getId());
-      System.out.println("Car Number: " + parkingHistoryEntity.getCarEntity().getCarNumber());
-      System.out.println("Member ID: " + parkingHistoryEntity.getMemberEntity().getId());
-      System.out.println("Member Name: " + parkingHistoryEntity.getMemberEntity().getUserName());
-      System.out.println("ParkingZone ID: " + parkingHistoryEntity.getParkingZoneEntity().getId());
-      System.out.println(
-          "ParkingZone Name: " + parkingHistoryEntity.getParkingZoneEntity().getZoneName());
-      System.out.println("Entrance Time: " + parkingHistoryEntity.getEntranceTime());
-      System.out.println("Exit Time: " + parkingHistoryEntity.getExitTime());
-      System.out.println("Payment Type: " + parkingHistoryEntity.getPaymentType());
-      if (parkingHistoryEntity.getPayEntity() != null) {
-        System.out.println("PayEntity ID: " + parkingHistoryEntity.getPayEntity().getId());
-        System.out.println("Amount Paid: " + parkingHistoryEntity.getPayEntity().getAmount());
-      } else {
-        System.out.println("No PayEntity");
-      }
-      System.out.println("-----------------------------------------------------");
-    });
+//    printParkingHistoryEntities(parkingHistoryEntities);
 
     // 7. ParkingHistory를 저장 시도 하고 실패시에 에러를 던짐
     try {
@@ -204,7 +182,7 @@ public class SyncInoutService {
   /**
    * @param filteredNewMemberInoutList 회원들의 입출차 기록 배열
    * @param carNumberToMemberMap       차량번호 -> 멤버 엔티티 HashMap
-   * @return 입출차 기록중 결제 기록이 있는 것들은 PayEntity배열로 반환
+   * @return 입출차 기록중 결제 기록이 있는 것들은 PayEntity배열로 반환 이때 payEntity의 id는 entry ID
    */
   private List<PayEntity> createPayEntities(List<SyncInoutRequest.Inout> filteredNewMemberInoutList,
       Map<String, MemberEntity> carNumberToMemberMap) {
@@ -213,11 +191,35 @@ public class SyncInoutService {
         .map(inout -> {
           MemberEntity member = carNumberToMemberMap.get(inout.getVehicleNumber());
           return PayEntity.builder()
+              .entryId(inout.getEntryId())
               .amount(inout.getFee())
               .paidAt(inout.getPaidAt())
               .memberEntity(member)
               .build();
         })
         .collect(Collectors.toList());
+  }
+
+  private void printParkingHistoryEntities(List<ParkingHistoryEntity> parkingHistoryEntities) {
+    parkingHistoryEntities.forEach(parkingHistoryEntity -> {
+      System.out.println("ParkingHistoryEntity ID: " + parkingHistoryEntity.getId());
+      System.out.println("Car ID: " + parkingHistoryEntity.getCarEntity().getId());
+      System.out.println("Car Number: " + parkingHistoryEntity.getCarEntity().getCarNumber());
+      System.out.println("Member ID: " + parkingHistoryEntity.getMemberEntity().getId());
+      System.out.println("Member Name: " + parkingHistoryEntity.getMemberEntity().getUserName());
+      System.out.println("ParkingZone ID: " + parkingHistoryEntity.getParkingZoneEntity().getId());
+      System.out.println(
+          "ParkingZone Name: " + parkingHistoryEntity.getParkingZoneEntity().getZoneName());
+      System.out.println("Entrance Time: " + parkingHistoryEntity.getEntranceTime());
+      System.out.println("Exit Time: " + parkingHistoryEntity.getExitTime());
+      System.out.println("Payment Type: " + parkingHistoryEntity.getPaymentType());
+      if (parkingHistoryEntity.getPayEntity() != null) {
+        System.out.println("PayEntity ID: " + parkingHistoryEntity.getPayEntity().getId());
+        System.out.println("Amount Paid: " + parkingHistoryEntity.getPayEntity().getAmount());
+      } else {
+        System.out.println("No PayEntity");
+      }
+      System.out.println("-----------------------------------------------------");
+    });
   }
 }
