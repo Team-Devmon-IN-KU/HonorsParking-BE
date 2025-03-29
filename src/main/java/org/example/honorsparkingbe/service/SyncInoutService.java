@@ -19,6 +19,7 @@ import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.example.honorsparkingbe.repository.internal.PayRepository;
+import org.example.honorsparkingbe.util.VehicleNumberFilter;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,13 +33,14 @@ public class SyncInoutService {
   private final ParkingZoneRepository parkingZoneRepository;
   private final MemberRepository memberRepository;
   private final PayRepository payRepository;
+  private final VehicleNumberFilter vehicleNumberFilter;
 
   @Transactional
   public SyncInoutResponse syncParkingHistory(SyncInoutRequest request) {
 
-    // 요청받은 차량 번호 리스트 추출
+    // 요청받은 차량 번호 리스트 추출 및 필터링
     List<String> vehicleNumbers = request.getInoutList().stream()
-        .map(SyncInoutRequest.Inout::getVehicleNumber)
+        .map(inout -> inout.getVehicleNumber())
         .toList();
 
     // 1. 한 번의 쿼리로 모든 차량 정보 조회
@@ -105,10 +107,33 @@ public class SyncInoutService {
         entryIdToPayEntityMap
     );
 
+    // parkingHistoryEntities 배열의 내용을 출력하는 부분
+    parkingHistoryEntities.forEach(parkingHistoryEntity -> {
+      System.out.println("ParkingHistoryEntity ID: " + parkingHistoryEntity.getId());
+      System.out.println("Car ID: " + parkingHistoryEntity.getCarEntity().getId());
+      System.out.println("Car Number: " + parkingHistoryEntity.getCarEntity().getCarNumber());
+      System.out.println("Member ID: " + parkingHistoryEntity.getMemberEntity().getId());
+      System.out.println("Member Name: " + parkingHistoryEntity.getMemberEntity().getUserName());
+      System.out.println("ParkingZone ID: " + parkingHistoryEntity.getParkingZoneEntity().getId());
+      System.out.println(
+          "ParkingZone Name: " + parkingHistoryEntity.getParkingZoneEntity().getZoneName());
+      System.out.println("Entrance Time: " + parkingHistoryEntity.getEntranceTime());
+      System.out.println("Exit Time: " + parkingHistoryEntity.getExitTime());
+      System.out.println("Payment Type: " + parkingHistoryEntity.getPaymentType());
+      if (parkingHistoryEntity.getPayEntity() != null) {
+        System.out.println("PayEntity ID: " + parkingHistoryEntity.getPayEntity().getId());
+        System.out.println("Amount Paid: " + parkingHistoryEntity.getPayEntity().getAmount());
+      } else {
+        System.out.println("No PayEntity");
+      }
+      System.out.println("-----------------------------------------------------");
+    });
+
     // 7. ParkingHistory를 저장 시도 하고 실패시에 에러를 던짐
     try {
       parkingHistoryRepository.saveAll(parkingHistoryEntities);
     } catch (Exception e) {
+      System.out.println(e.getMessage());
       throw new RuntimeException("주차 기록 저장 중 오류 발생", e);
     }
 
