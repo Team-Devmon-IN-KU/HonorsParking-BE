@@ -1,80 +1,335 @@
 package org.example.honorsparkingbe.unit.service;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
+import org.example.honorsparkingbe.domain.entity.CarEntity;
+import org.example.honorsparkingbe.domain.entity.CityEntity;
+import org.example.honorsparkingbe.domain.entity.DistrictEntity;
+import org.example.honorsparkingbe.domain.entity.EupMyeonDongEntity;
+import org.example.honorsparkingbe.domain.entity.MemberEntity;
+import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
+import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
+import org.example.honorsparkingbe.domain.entity.PayEntity;
+import org.example.honorsparkingbe.domain.enums.CarType;
+import org.example.honorsparkingbe.domain.enums.MemberRole;
+import org.example.honorsparkingbe.domain.enums.PaymentType;
+import org.example.honorsparkingbe.dto.request.SyncInoutRequest;
+import org.example.honorsparkingbe.dto.request.SyncInoutRequest.Inout;
+import org.example.honorsparkingbe.dto.response.SyncInoutResponse;
+import org.example.honorsparkingbe.dto.response.SyncInoutResponse.ParkingEntry;
+import org.example.honorsparkingbe.repository.internal.CarRepository;
+import org.example.honorsparkingbe.repository.internal.MemberRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
+import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
+import org.example.honorsparkingbe.repository.internal.PayRepository;
+import org.example.honorsparkingbe.service.SyncInoutService;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @ExtendWith(MockitoExtension.class)
 public class SyncInoutServiceTest {
 
+  private static final Logger logger = LoggerFactory.getLogger(SyncInoutServiceTest.class);
+
+
+  @InjectMocks
+  private SyncInoutService syncInoutService;
+
+  @Mock
+  private CarRepository carRepository;
+  @Mock
+  private ParkingHistoryRepository parkingHistoryRepository;
+  @Mock
+  private MemberRepository memberRepository;
+  @Mock
+  private ParkingZoneRepository parkingZoneRepository;
+  @Mock
+  private PayRepository payRepository;
+
+  CarEntity entryOnlyCar;
+  CarEntity exitedCar;
+  MemberEntity entryOnlyMember;
+  MemberEntity exitMember;
+  PayEntity exitCarpay;
+
+  Inout entryOnlyInout;
+  Inout exitedInout;
+  Inout nonMemberIntout;
+
+  ParkingZoneEntity sampleParkingZone;
+
+  ParkingHistoryEntity entryOnlyParkingHistory;
+  ParkingHistoryEntity exitedParkingHistory;
+
+  @BeforeEach
+  void setUp() {
+
+    // 로그 출력 활성화
+
+    // 4. 입차만 한 차량 엔티티
+    entryOnlyCar = CarEntity.builder()
+        .id(1L).carNumber("11가1111").carType(CarType.NORMAL).isElectric(false)
+        .build();
+
+    // 5. 출차까지 완료한 차량 엔티티
+    exitedCar = CarEntity.builder()
+        .id(2L).carNumber("22가2222").carType(CarType.LIGHT_CAR).isElectric(false)
+        .build();
+
+    entryOnlyMember = MemberEntity.builder()
+        .id(1L).carEntity(entryOnlyCar).role(MemberRole.ROLE_USER).userName("entryOnlyMember")
+        .authId("entryOnlyMember")
+        .build();
+
+    exitMember = MemberEntity.builder()
+        .id(1L).carEntity(exitedCar).role(MemberRole.ROLE_USER).userName("exitMember")
+        .authId("exitMember")
+        .build();
+
+    CityEntity seoul = CityEntity.builder().name("서울").build();
+    DistrictEntity sampleDistrict = DistrictEntity.builder().name("중구").build();
+    EupMyeonDongEntity sampleEupMyeonDong = EupMyeonDongEntity.builder().name("데브몬동").build();
+
+    sampleParkingZone = ParkingZoneEntity.builder()
+        .id(1L).latitude(37.5665).longitude(126.9780).zoneName("서울 주차장").size(100).maxCost(12000)
+        .address("서울특별시").cityEntity(seoul).districtEntity(sampleDistrict)
+        .eupMyeonDongEntity(sampleEupMyeonDong)
+        .build();
+
+    entryOnlyInout = Inout.builder()
+        .vehicleNumber(entryOnlyCar.getCarNumber())
+        .entryId(1L)
+        .entryTime(LocalDateTime.of(2024, 4, 1, 10, 0)) // 예제 입차 시간
+        .exitTime(null)
+        .fee(null)
+        .paidAt(null)
+        .parkinglotId(1L)
+        .build();
+
+    exitedInout = Inout.builder()
+        .vehicleNumber(exitedCar.getCarNumber())
+        .entryId(2L)
+        .entryTime(LocalDateTime.of(2024, 4, 1, 9, 0))  // 예제 입차 시간
+        .exitTime(LocalDateTime.of(2024, 4, 1, 11, 0))  // 출차 시간
+        .fee(5000) // 요금 예제
+        .paidAt(LocalDateTime.of(2024, 4, 1, 10, 59)) // 결제 시간
+        .parkinglotId(1L)
+        .build();
+
+    nonMemberIntout = Inout.builder()
+        .vehicleNumber("33가3333") // 비회원 차량
+        .entryId(3L)
+        .entryTime(LocalDateTime.of(2024, 4, 1, 12, 0)) // 예제 입차 시간
+        .exitTime(null)
+        .fee(null)
+        .paidAt(null)
+        .parkinglotId(2L) // 다른 주차장 예제
+        .build();
+
+    exitCarpay = PayEntity.builder()
+        .entryId(exitedInout.getEntryId())
+        .amount(exitedInout.getFee())
+        .build();
+
+    entryOnlyParkingHistory = ParkingHistoryEntity.builder()
+        .id(entryOnlyInout.getEntryId()).carEntity(entryOnlyCar).memberEntity(entryOnlyMember)
+        .parkingZoneEntity(sampleParkingZone).entranceTime(entryOnlyInout.getEntryTime())
+        .paymentType(PaymentType.NONE)
+        .build();
+
+    exitedParkingHistory = ParkingHistoryEntity.builder()
+        .id(exitedInout.getEntryId()).carEntity(exitedCar).memberEntity(exitMember)
+        .parkingZoneEntity(sampleParkingZone).entranceTime(exitedInout.getEntryTime())
+        .exitTime(exitedInout.getExitTime()).paymentType(PaymentType.OTHER).payEntity(exitCarpay)
+        .build();
+  }
+
   @DisplayName("입출차 동시에 들어왔을 때 결제정보와 입차처리를 잘 하는가")
   @Test
   public void testSyncInoutWithSimultaneousEntryAndPayment() {
-    // 입차와 결제 정보가 동시에 처리되는 경우, 결제 정보와 입차 기록이 제대로 처리되는지 검증
+
+    // Given
+    SyncInoutRequest syncInoutRequest = SyncInoutRequest.builder()
+        .inoutList(List.of(entryOnlyInout, exitedInout))
+        .build();
+
+    when(carRepository.findAllByCarNumberIn(List.of(
+        entryOnlyInout.getVehicleNumber(),
+        exitedInout.getVehicleNumber())))
+        .thenReturn(List.of(entryOnlyCar, exitedCar)
+        );
+
+    when(memberRepository.findAllByCarEntity_CarNumberIn(List.of(
+        entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())))
+        .thenReturn(List.of(entryOnlyMember, exitMember));
+    when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
+    when(payRepository.saveAll(anyList())).thenReturn(List.of(PayEntity.builder()
+        .id(1L).amount(exitCarpay.getAmount()).entryId(exitCarpay.getEntryId())
+        .memberEntity(exitMember)
+        .paidAt(exitCarpay.getPaidAt())
+        .build()));
+    when(parkingHistoryRepository.saveAll(anyList())).thenReturn(
+        List.of(entryOnlyParkingHistory, exitedParkingHistory));
+    // WHEN
+    SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
+
+    // THEN
+    assertNotNull(response);
+    assertNotNull(response.getValidNonExitEntries());
+    assertEquals(
+        List.of(entryOnlyInout.getEntryId(), exitedInout.getEntryId()),  // 기대 값
+        response.getValidNonExitEntries().stream()  // 실제 값
+            .map(ParkingEntry::getId)  // ParkingEntry 객체의 id만 추출
+            .collect(Collectors.toList())  // id 값만 리스트로 변환
+    );
+
+    // Verifying the repository calls
+    verify(carRepository, times(1))
+        .findAllByCarNumberIn(eq(List.of(entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())));
+    verify(memberRepository, times(1))
+        .findAllByCarEntity_CarNumberIn(
+            eq(List.of(entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())));
+    verify(parkingZoneRepository, times(1))
+        .findAllByIdIn(eq(List.of(1L)));
+    verify(payRepository, times(1))
+        .saveAll(anyList());
+    verify(parkingHistoryRepository, times(1))
+        .saveAll(anyList());
+
   }
 
   @DisplayName("회원과 비회원차량이 섞였을 때 잘 필터링 하는가")
   @Test
   public void testFilterMemberAndNonMemberVehicles() {
     // 회원 차량과 비회원 차량을 구분하여 필터링이 제대로 이루어지는지 검증
-    // 비회원 차량이 잘 필터링되고 회원 차량만 입출차 기록이 처리되는지 확인
+    // Given
+    SyncInoutRequest syncInoutRequest = SyncInoutRequest.builder()
+        .inoutList(List.of(entryOnlyInout, exitedInout, nonMemberIntout))
+        .build();
+
+    when(carRepository.findAllByCarNumberIn(List.of(
+        entryOnlyInout.getVehicleNumber(), exitedInout.getVehicleNumber(),
+        nonMemberIntout.getVehicleNumber())))
+        .thenReturn(List.of(entryOnlyCar, exitedCar)
+        );
+
+    when(memberRepository.findAllByCarEntity_CarNumberIn(List.of(
+        entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())))
+        .thenReturn(List.of(entryOnlyMember, exitMember));
+    when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
+    when(payRepository.saveAll(anyList())).thenReturn(List.of(PayEntity.builder()
+        .id(1L).amount(exitCarpay.getAmount()).entryId(exitCarpay.getEntryId())
+        .memberEntity(exitMember)
+        .paidAt(exitCarpay.getPaidAt())
+        .build()));
+    when(parkingHistoryRepository.saveAll(anyList())).thenReturn(
+        List.of(entryOnlyParkingHistory, exitedParkingHistory));
+    // WHEN
+    SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
+
+    // THEN
+    assertNotNull(response);
+    assertNotNull(response.getValidNonExitEntries());
+    assertEquals(
+        List.of(entryOnlyInout.getEntryId(), exitedInout.getEntryId()),  // 기대 값
+        response.getValidNonExitEntries().stream()  // 실제 값
+            .map(ParkingEntry::getId)  // ParkingEntry 객체의 id만 추출
+            .collect(Collectors.toList())  // id 값만 리스트로 변환
+    );
+
+    // Verifying the repository calls
+    verify(carRepository, times(1))
+        .findAllByCarNumberIn(eq(List.of(entryOnlyCar.getCarNumber(), exitedCar.getCarNumber(),
+            nonMemberIntout.getVehicleNumber())));
+    verify(memberRepository, times(1)).findAllByCarEntity_CarNumberIn(
+        eq(List.of(entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())));
+    verify(parkingZoneRepository, times(1)).findAllByIdIn(eq(List.of(1L)));
+    verify(payRepository, times(1)).saveAll(anyList());
+    verify(parkingHistoryRepository, times(1)).saveAll(anyList());
   }
 
-  @DisplayName("같은 ID값이 들어왔을 때 동일한 처리 로직이 실행되는가")
+  @DisplayName("비회원 차량만 있을 때 빈배열이 반환되는지 확인")
   @Test
-  public void testDuplicateEntryIdHandling() {
+  public void testSyncInoutResponseNonMemberHistory() {
+    // Given
+    SyncInoutRequest syncInoutRequest = SyncInoutRequest.builder()
+        .inoutList(List.of(nonMemberIntout))
+        .build();
+    when(carRepository.findAllByCarNumberIn(List.of(nonMemberIntout.getVehicleNumber())))
+        .thenReturn(List.of(entryOnlyCar, exitedCar));
+
+    // WHEN
+    SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
+
+    // THEN
+    assertNotNull(response);
+    assertNotNull(response.getValidNonExitEntries());
+    assertTrue(response.getValidNonExitEntries().isEmpty());
+
+    // Verifying the repository calls
+    verify(carRepository, times(1))
+        .findAllByCarNumberIn(eq(List.of(nonMemberIntout.getVehicleNumber())));
+  }
+
+  @DisplayName("같은 회원 입출차 ID값이 들어왔을 때 1개만 처리 되는가")
+  @Test
+  public void testDuplicatetryIdHandling() {
     // 동일한 ID가 여러 번 들어왔을 때, 중복 처리 혹은 오류가 발생하지 않고 정상적으로 처리되는지 검증
-    // 중복된 entryId에 대해서 어떻게 처리되는지 검토
-  }
+    // Given
+    SyncInoutRequest syncInoutRequest = SyncInoutRequest.builder()
+        .inoutList(List.of(entryOnlyInout, entryOnlyInout))
+        .build();
 
-  @DisplayName("차량 번호가 존재하지 않는 경우 빈 리스트가 반환되는지 확인")
-  @Test
-  public void testNoVehicleDataFound() {
-    // 등록되지 않은 차량 번호에 대한 처리가 제대로 이루어지고, 빈 리스트가 반환되는지 확인
-    // registeredCars가 비어 있을 경우 빈 리스트가 반환되는지 검증
-  }
+    when(carRepository.findAllByCarNumberIn(List.of(
+        entryOnlyInout.getVehicleNumber(),
+        entryOnlyInout.getVehicleNumber())))
+        .thenReturn(List.of(entryOnlyCar));
 
-  @DisplayName("회원이 등록된 차량 번호로만 처리되는지 확인")
-  @Test
-  public void testProcessOnlyRegisteredVehicles() {
-    // 회원 차량 번호만 처리되는지, 비회원 차량 번호가 필터링되는지 확인
-    // `filteredNewMemberInoutList`가 회원 차량에 대해서만 잘 필터링되는지 검증
-  }
+    when(memberRepository.findAllByCarEntity_CarNumberIn(List.of(entryOnlyCar.getCarNumber())))
+        .thenReturn(List.of(entryOnlyMember));
+    when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
+    when(parkingHistoryRepository.saveAll(anyList())).thenReturn(
+        List.of(entryOnlyParkingHistory));
+    // WHEN
+    SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
 
-  @DisplayName("InOut 리스트에서 중복되는 주차장 ID를 처리하는지 확인")
-  @Test
-  public void testHandleDuplicateParkinglotIds() {
-    // `filteredNewMemberInoutList`에서 중복된 주차장 ID를 처리하고, 실제로 DB에서 중복된 주차장 정보가 조회되는지 확인
-    // `distinct()`가 잘 적용되어 중복된 주차장 ID가 처리되는지 확인
-  }
+    // THEN
+    assertNotNull(response);
+    assertNotNull(response.getValidNonExitEntries());
+    assertEquals(
+        List.of(entryOnlyInout.getEntryId()),  // 기대 값
+        response.getValidNonExitEntries().stream()  // 실제 값
+            .map(ParkingEntry::getId)  // ParkingEntry 객체의 id만 추출
+            .collect(Collectors.toList())  // id 값만 리스트로 변환
+    );
 
-  @DisplayName("PayEntity가 정상적으로 DB에 저장되는지 확인")
-  @Test
-  public void testPayEntitySaving() {
-    // `payRepository.saveAll()`을 통해 `PayEntity`가 정상적으로 저장되는지 확인
-    // `PayEntity` 저장 후 반환되는 값이 정확한지, 저장 후 조회하여 값을 비교
-  }
+    // Verifying the repository calls
+    verify(carRepository, times(1))
+        .findAllByCarNumberIn(
+            eq(List.of(entryOnlyCar.getCarNumber(), entryOnlyCar.getCarNumber())));
+    verify(memberRepository, times(1))
+        .findAllByCarEntity_CarNumberIn(eq(List.of(entryOnlyCar.getCarNumber())));
+    verify(parkingZoneRepository, times(1))
+        .findAllByIdIn(eq(List.of(1L)));
+    verify(parkingHistoryRepository, times(1))
+        .saveAll(anyList());
 
-  @DisplayName("ParkingHistoryEntity 배열이 제대로 생성되는지 확인")
-  @Test
-  public void testParkingHistoryEntityCreation() {
-    // `createParkingHistoryEntities()`가 필터링된 입출차 데이터로 `ParkingHistoryEntity`를 잘 생성하는지 확인
-    // 생성된 엔티티들이 예상대로 필드가 채워졌는지 검증
   }
-
-  @DisplayName("ParkingHistory 저장 시 에러가 발생하는지 확인")
-  @Test
-  public void testParkingHistorySavingError() {
-    // `parkingHistoryRepository.saveAll()`을 호출할 때 에러가 발생하는지 테스트
-    // 저장 중 예외가 발생하면 `RuntimeException`이 던져지는지 확인
-  }
-
-  @DisplayName("SyncInoutResponse가 정상적으로 반환되는지 확인")
-  @Test
-  public void testSyncInoutResponse() {
-    // `SyncInoutResponse`가 정상적으로 반환되고, `ValidNonExitEntries`에 올바른 값들이 포함되는지 확인
-    // 반환된 Response의 내용이 기대한대로 구성되는지 검증
-  }
-
 }
