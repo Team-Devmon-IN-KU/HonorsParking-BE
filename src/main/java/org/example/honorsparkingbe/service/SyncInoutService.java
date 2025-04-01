@@ -51,11 +51,13 @@ public class SyncInoutService {
     Map<String, CarEntity> carNumberToCarMap = registeredCars.stream()
         .collect(Collectors.toMap(CarEntity::getCarNumber, car -> car));
 
-    // 회원 등록된 차량만 Response DTO내의 배열로 처리
+    // 회원 등록된 차량만 Response DTO내의 배열로 처리 같은
     List<SyncInoutRequest.Inout> filteredNewMemberInoutList = request.getInoutList().stream()
         .filter(inout -> carNumberToCarMap.containsKey(inout.getVehicleNumber())) // 존재하는 차량만 필터링
-        .toList();
-
+        .collect(Collectors.groupingBy(inout -> inout.getEntryId())) // entryId가 같으면 그룹화
+        .values().stream()
+        .map(group -> group.get(0)) // 그룹화된 첫 번째 요소를 가져옴 (entryId가 같은 항목을 하나로 합침)
+        .collect(Collectors.toList());
     // 2. DB에서 차량 번호 리스트에 해당하는 회원 엔티티 조회
     List<MemberEntity> memberEntities = memberRepository.findAllByCarEntity_CarNumberIn(
         registeredCars.stream().map(carEntity -> carEntity.getCarNumber()).toList());
