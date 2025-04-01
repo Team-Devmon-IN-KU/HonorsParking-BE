@@ -82,15 +82,15 @@ public class CreateDummyDataForCurrentInfo {
         .orElseThrow(() -> new RuntimeException("ParkingZone ID 3 not found"));
 
     // ParkingHistory 데이터 추가
-    ParkingHistoryEntity history1 = ParkingHistoryEntity.builder()
+    ParkingHistoryEntity history1 = ParkingHistoryEntity.builder().id(1L)
         .carEntity(car1).memberEntity(member1).parkingZoneEntity(parkingZone1)
         .entranceTime(LocalDateTime.of(2025, 2, 10, 8, 30))
         .exitTime(LocalDateTime.of(2025, 2, 10, 10, 30)).paymentType(PaymentType.ON_SITE).build();
-    ParkingHistoryEntity history2 = ParkingHistoryEntity.builder()
+    ParkingHistoryEntity history2 = ParkingHistoryEntity.builder().id(2L)
         .carEntity(car2).memberEntity(member2).parkingZoneEntity(parkingZone1)
         .entranceTime(LocalDateTime.of(2025, 2, 10, 9, 15))
         .exitTime(LocalDateTime.of(2025, 2, 10, 11, 00)).paymentType(PaymentType.KIOSK).build();
-    ParkingHistoryEntity history3 = ParkingHistoryEntity.builder()
+    ParkingHistoryEntity history3 = ParkingHistoryEntity.builder().id(3L)
         .carEntity(car2).memberEntity(member2).parkingZoneEntity(parkingZone2)
         .entranceTime(LocalDateTime.of(2025, 2, 10, 10, 0)).exitTime(null)
         .paymentType(PaymentType.NONE).build();
