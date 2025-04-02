@@ -6,6 +6,7 @@ package org.example.honorsparkingbe.config;
 
 import jakarta.servlet.http.HttpServletResponse;
 import java.util.List;
+import org.example.honorsparkingbe.security.ApiKeyAuthFilter;
 import org.example.honorsparkingbe.security.CustomFormLoginSuccessHandler;
 import org.example.honorsparkingbe.security.CustomOAuth2LoginSuccessHandler;
 import org.example.honorsparkingbe.security.CustomOAuth2UserService;
@@ -17,6 +18,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
@@ -31,12 +33,14 @@ public class SecurityConfig {
 
   private final CustomOAuth2UserService customOAuth2UserService;
   private final String activeProfile;
+  private final ApiKeyAuthFilter apiKeyAuthFilter;
 
   public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, Environment environment) {
 
     this.customOAuth2UserService = customOAuth2UserService;
     this.activeProfile = environment.getProperty("spring.profiles.active",
         "default"); // 현재 프로필 가져오기
+    this.apiKeyAuthFilter = new ApiKeyAuthFilter(environment);
   }
 
   /**
@@ -58,11 +62,14 @@ public class SecurityConfig {
         .cors(cors -> cors.configurationSource(corsConfigurationSource())) // CORS 활성화
         .authorizeHttpRequests((auth) -> auth
             .requestMatchers("/api/v1/", "/api/v1/auth/login/**", "/api/v1/auth/join", "/confirm",
-                "/swagger-ui/**", "/v3/api-docs/**", "api/v1/auth/check-authId").permitAll()
+                "/swagger-ui/**", "/v3/api-docs/**", "api/v1/auth/check-authId",
+                "api/v1/sync/inout").permitAll()
             .requestMatchers("/api/v1/admin").hasRole("ADMIN")                  // 해당 role만 접근 가능
             .requestMatchers("/api/v1/my/**").hasAnyRole("ADMIN", "USER") // /api/v1/my/**만 허용
             .anyRequest().authenticated()
         )
+        .addFilterBefore(apiKeyAuthFilter,
+            UsernamePasswordAuthenticationFilter.class) // API Key 필터 추가
 
         .exceptionHandling(exception -> exception
             .authenticationEntryPoint((request, response, authException) -> {
@@ -133,7 +140,7 @@ public class SecurityConfig {
     ));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드 설정
     config.setAllowedHeaders(List.of("*")); // 모든 요청 헤더 허용
-    config.setExposedHeaders(List.of("Authorization", "Set-Cookie"));
+    config.setExposedHeaders(List.of("Authorization", "Set-Cookie", "X-API-KEY"));
 
     source.registerCorsConfiguration("/**", config);
     return source;
