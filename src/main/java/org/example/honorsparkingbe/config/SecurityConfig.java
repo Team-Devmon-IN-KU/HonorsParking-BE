@@ -35,12 +35,13 @@ public class SecurityConfig {
   private final String activeProfile;
   private final ApiKeyAuthFilter apiKeyAuthFilter;
 
-  public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, Environment environment) {
+  public SecurityConfig(CustomOAuth2UserService customOAuth2UserService, Environment environment,
+      ApiKeyAuthFilter apiKeyAuthFilter) {
 
     this.customOAuth2UserService = customOAuth2UserService;
     this.activeProfile = environment.getProperty("spring.profiles.active",
         "default"); // 현재 프로필 가져오기
-    this.apiKeyAuthFilter = new ApiKeyAuthFilter(environment);
+    this.apiKeyAuthFilter = apiKeyAuthFilter;
   }
 
   /**
