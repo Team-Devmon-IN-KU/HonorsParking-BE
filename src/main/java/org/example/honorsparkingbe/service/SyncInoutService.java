@@ -87,13 +87,13 @@ public class SyncInoutService {
         ));
 
     // PayEntity생성 후 DB에 저장
-    List<PayEntity> savedPayEntities = payRepository.saveAll(
+    List<PayEntity> savedPayEntities = payRepository.bulkInsertAndUpdate(
         createPayEntities(filteredNewMemberInoutList, carNumberToMemberMap));
 
     // 검색 속도를 위한 pay Map생성
     Map<Long, PayEntity> entryIdToPayEntityMap = savedPayEntities.stream()
         .collect(Collectors.toMap(
-            payEntity -> payEntity.getEntryId(),  // Key entryId로 사용
+            payEntity -> payEntity.getId(),  // Key entryId로 사용
             payEntity -> payEntity           // PayEntity를 값으로 사용
         ));
 
@@ -111,7 +111,7 @@ public class SyncInoutService {
 
     // 7. ParkingHistory를 저장 시도 하고 실패시에 에러를 던짐
     try {
-      parkingHistoryRepository.saveAll(parkingHistoryEntities);
+      parkingHistoryRepository.bulkInsertAndUpdate(parkingHistoryEntities);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException("주차 기록 저장 중 오류 발생", e);
@@ -193,7 +193,7 @@ public class SyncInoutService {
         .map(inout -> {
           MemberEntity member = carNumberToMemberMap.get(inout.getVehicleNumber());
           return PayEntity.builder()
-              .entryId(inout.getEntryId())
+              .id(inout.getEntryId())
               .amount(inout.getFee())
               .paidAt(inout.getPaidAt())
               .memberEntity(member)

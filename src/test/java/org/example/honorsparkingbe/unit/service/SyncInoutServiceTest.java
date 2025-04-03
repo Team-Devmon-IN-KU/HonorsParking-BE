@@ -5,6 +5,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -144,7 +145,7 @@ public class SyncInoutServiceTest {
         .build();
 
     exitCarpay = PayEntity.builder()
-        .entryId(exitedInout.getEntryId())
+        .id(exitedInout.getEntryId())
         .amount(exitedInout.getFee())
         .build();
 
@@ -180,13 +181,12 @@ public class SyncInoutServiceTest {
         entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())))
         .thenReturn(List.of(entryOnlyMember, exitMember));
     when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
-    when(payRepository.saveAll(anyList())).thenReturn(List.of(PayEntity.builder()
-        .id(1L).amount(exitCarpay.getAmount()).entryId(exitCarpay.getEntryId())
+    when(payRepository.bulkInsertAndUpdate(anyList())).thenReturn(List.of(PayEntity.builder()
+        .id(1L).amount(exitCarpay.getAmount()).id(exitCarpay.getId())
         .memberEntity(exitMember)
         .paidAt(exitCarpay.getPaidAt())
         .build()));
-    when(parkingHistoryRepository.saveAll(anyList())).thenReturn(
-        List.of(entryOnlyParkingHistory, exitedParkingHistory));
+    doNothing().when(parkingHistoryRepository).bulkInsertAndUpdate(anyList());
     // WHEN
     SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
 
@@ -209,9 +209,9 @@ public class SyncInoutServiceTest {
     verify(parkingZoneRepository, times(1))
         .findAllByIdIn(eq(List.of(1L)));
     verify(payRepository, times(1))
-        .saveAll(anyList());
+        .bulkInsertAndUpdate(anyList());
     verify(parkingHistoryRepository, times(1))
-        .saveAll(anyList());
+        .bulkInsertAndUpdate(anyList());
 
   }
 
@@ -234,13 +234,12 @@ public class SyncInoutServiceTest {
         entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())))
         .thenReturn(List.of(entryOnlyMember, exitMember));
     when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
-    when(payRepository.saveAll(anyList())).thenReturn(List.of(PayEntity.builder()
-        .id(1L).amount(exitCarpay.getAmount()).entryId(exitCarpay.getEntryId())
+    when(payRepository.bulkInsertAndUpdate(anyList())).thenReturn(List.of(PayEntity.builder()
+        .id(1L).amount(exitCarpay.getAmount()).id(exitCarpay.getId())
         .memberEntity(exitMember)
         .paidAt(exitCarpay.getPaidAt())
         .build()));
-    when(parkingHistoryRepository.saveAll(anyList())).thenReturn(
-        List.of(entryOnlyParkingHistory, exitedParkingHistory));
+    doNothing().when(parkingHistoryRepository).bulkInsertAndUpdate(anyList());
     // WHEN
     SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
 
@@ -261,8 +260,8 @@ public class SyncInoutServiceTest {
     verify(memberRepository, times(1)).findAllByCarEntity_CarNumberIn(
         eq(List.of(entryOnlyCar.getCarNumber(), exitedCar.getCarNumber())));
     verify(parkingZoneRepository, times(1)).findAllByIdIn(eq(List.of(1L)));
-    verify(payRepository, times(1)).saveAll(anyList());
-    verify(parkingHistoryRepository, times(1)).saveAll(anyList());
+    verify(payRepository, times(1)).bulkInsertAndUpdate(anyList());
+    verify(parkingHistoryRepository, times(1)).bulkInsertAndUpdate(anyList());
   }
 
   @DisplayName("비회원 차량만 있을 때 빈배열이 반환되는지 확인")
@@ -305,8 +304,8 @@ public class SyncInoutServiceTest {
     when(memberRepository.findAllByCarEntity_CarNumberIn(List.of(entryOnlyCar.getCarNumber())))
         .thenReturn(List.of(entryOnlyMember));
     when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
-    when(parkingHistoryRepository.saveAll(anyList())).thenReturn(
-        List.of(entryOnlyParkingHistory));
+    doNothing().when(parkingHistoryRepository).bulkInsertAndUpdate(anyList());
+
     // WHEN
     SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
 
@@ -329,7 +328,7 @@ public class SyncInoutServiceTest {
     verify(parkingZoneRepository, times(1))
         .findAllByIdIn(eq(List.of(1L)));
     verify(parkingHistoryRepository, times(1))
-        .saveAll(anyList());
+        .bulkInsertAndUpdate(anyList());
 
   }
 }

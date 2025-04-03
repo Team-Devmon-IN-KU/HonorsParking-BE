@@ -4,11 +4,13 @@ services:
 
   redis:
     image: redis
+    platform: linux/amd64
     restart: always
     ports:
       - "6379:6379"
   db:
     image: mysql
+    platform: linux/amd64
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: 1234
@@ -22,6 +24,7 @@ services:
 
 #  backend:
 #    container_name: honorsParking
+#    platform: linux/amd64
 #    build: .
 #    ports:
 #      - "8080:8080"

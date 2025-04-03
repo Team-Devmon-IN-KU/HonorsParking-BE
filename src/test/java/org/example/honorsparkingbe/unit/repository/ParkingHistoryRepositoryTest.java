@@ -138,11 +138,13 @@ public class ParkingHistoryRepositoryTest {
     );
     testPay1 = payRepository.save(
         PayEntity.builder()
+            .id(1L)
             .memberEntity(testMember1)
             .build()
     );
     testPay2 = payRepository.save(
         PayEntity.builder()
+            .id(2L)
             .memberEntity(testMember2)
             .build()
     );
