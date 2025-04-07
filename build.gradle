@@ -80,4 +80,12 @@ tasks.named('test') {
 
 test {
     systemProperty 'spring.profiles.active', 'test'
+
+    testLogging {
+        events "failed" // 실패한 테스트에 대해서만 로그 출력
+        exceptionFormat "full" // 예외 전체 스택트레이스 출력
+        showExceptions true
+        showCauses true
+        showStackTraces true
+    }
 }
