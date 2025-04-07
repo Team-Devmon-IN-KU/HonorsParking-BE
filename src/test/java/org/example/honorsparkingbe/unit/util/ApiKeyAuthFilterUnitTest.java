@@ -14,7 +14,11 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest(properties = "spring.profiles.active=test")
+@SpringBootTest(properties = {
+    "spring.profiles.active=test",
+    "spring.data.redis.port=6379",        // ✅ 강제 설정
+    "spring.data.redis.host=localhost"    // ✅ 호스트도 같이 지정
+})
 @AutoConfigureMockMvc
 public class ApiKeyAuthFilterUnitTest {
 
