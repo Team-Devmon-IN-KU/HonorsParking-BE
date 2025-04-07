@@ -70,6 +70,7 @@ public class InitIntegrationTest {
     System.setProperty("spring.datasource.url", mysql.getJdbcUrl());
     System.setProperty("spring.datasource.username", mysql.getUsername());
     System.setProperty("spring.datasource.password", mysql.getPassword());
+    System.setProperty("api.key", "valid-api-key");
   }
 
   @AfterAll
