@@ -7,6 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -22,6 +23,13 @@ public class ApiKeyAuthFilterUnitTest {
   private MockMvc mockMvc;
   @Autowired
   private ObjectMapper objectMapper;
+
+  @BeforeAll
+  static void setUp() {
+    System.setProperty("api.key", "valid-api-key");
+    System.setProperty("spring.data.redis.host", "localhost");
+    System.setProperty("spring.data.redis.port", "6379");
+  }
 
   @Test
   void API_KEY가_정상적으로_인증되면_200_OK() throws Exception {

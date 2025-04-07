@@ -35,5 +35,3 @@ spring:
   h2:
     console:
       enabled: true
-api:
-  key: valid-api-key
