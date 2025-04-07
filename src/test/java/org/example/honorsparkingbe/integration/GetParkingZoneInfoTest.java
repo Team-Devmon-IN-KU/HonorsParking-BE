@@ -20,6 +20,7 @@ public class GetParkingZoneInfoTest extends InitIntegrationTest {
         "longitude", 126.978
     );
 
+    System.out.println(queryParams);
     // then
     client.get()
         .uri(uriBuilder -> uriBuilder.path("/api/v1/parkingzone/list")
