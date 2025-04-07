@@ -1,14 +1,12 @@
 package org.example.honorsparkingbe.unit.util;
 
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,7 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@SpringBootTest(properties = "spring.profiles.active=test")
 @AutoConfigureMockMvc
 public class ApiKeyAuthFilterUnitTest {
 
@@ -24,11 +22,6 @@ public class ApiKeyAuthFilterUnitTest {
   private MockMvc mockMvc;
   @Autowired
   private ObjectMapper objectMapper;
-
-  @BeforeAll
-  static void setUp() {
-    System.setProperty("api.key", "valid-api-key");
-  }
 
   @Test
   void API_KEY가_정상적으로_인증되면_200_OK() throws Exception {
@@ -44,14 +37,24 @@ public class ApiKeyAuthFilterUnitTest {
 
   @Test
   void API_KEY가_없으면_401_UNAUTHORIZED() throws Exception {
-    mockMvc.perform(get("/api/v1/sync/inout")) // ❌ API Key 없음
+    String requestBody = objectMapper.writeValueAsString(Map.of("inoutList", List.of()));
+
+    mockMvc.perform(post("/api/v1/sync/inout") // ❌ API Key 없음
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestBody).with(csrf())
+        )
         .andExpect(status().isUnauthorized());
   }
 
   @Test
   void API_KEY가_잘못되면_401_UNAUTHORIZED() throws Exception {
-    mockMvc.perform(get("/api/v1/sync/inout")
-            .header("X-API-KEY", "wrong-key")) // ❌ 잘못된 API Key
+    String requestBody = objectMapper.writeValueAsString(Map.of("inoutList", List.of()));
+
+    mockMvc.perform(post("/api/v1/sync/inout")
+            .header("X-API-KEY", "wrongKey") // ❌ 잘못된 API Key
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(requestBody).with(csrf())
+        )
         .andExpect(status().isUnauthorized());
   }
 }
