@@ -9,10 +9,15 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      # 커밋한 파일들을 불러옴
-      - name: Github Repository 파일 불러오기
-        # 레포지토리에 저장되어있는 코드 불러오는 라이브러리
+      - name: PR 브랜치 체크아웃
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref }}
+
+      - name: 현재 브랜치 출력
+        run: |
+          echo "GitHub 환경변수 기준 브랜치: ${{ github.head_ref }}"
+          echo "Git 명령어 기준 브랜치: $(git rev-parse --abbrev-ref HEAD)"
 
       # Github Actions에 빌드, 테스트 할 때 필요한 JDK 설치
       - name: JDK 21 설치
