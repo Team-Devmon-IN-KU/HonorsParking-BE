@@ -45,6 +45,7 @@ public class RedisUtilTest {
   static public GenericContainer<?> redis = new GenericContainer<>(
       DockerImageName.parse(REDIS_IMAGE))
       .withExposedPorts(REDIS_PORT)
+      .withCreateContainerCmdModifier(cmd -> cmd.withPlatform("linux/amd64")) // ✅ 플랫폼 지정
       .waitingFor(Wait.forListeningPort())
       .waitingFor(Wait.defaultWaitStrategy());
 
