@@ -78,4 +78,9 @@ tasks.named('test') {
 
 test {
     systemProperty 'spring.profiles.active', 'test'
+
+    testLogging {
+        events "failed" // ✅ 실패한 테스트만
+        showStandardStreams = true // ✅ System.out.println 포함 출력
+    }
 }
