@@ -13,11 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
+@SpringBootTest(properties = {"api.key=valid-api-key"})
 @AutoConfigureMockMvc
 public class ApiKeyAuthFilterUnitTest {
 
@@ -26,10 +24,10 @@ public class ApiKeyAuthFilterUnitTest {
   @Autowired
   private ObjectMapper objectMapper;
 
-  @DynamicPropertySource
-  static void setProperties(DynamicPropertyRegistry registry) {
-    registry.add("api.key", () -> "valid-api-key");
-  }
+//  @DynamicPropertySource
+//  static void setProperties(DynamicPropertyRegistry registry) {
+//    registry.add("api.key", () -> "valid-api-key");
+//  }
 
   @Test
   void API_KEY가_정상적으로_인증되면_200_OK() throws Exception {
