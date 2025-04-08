@@ -72,6 +72,10 @@ public class InitIntegrationTest {
     System.setProperty("spring.datasource.password", mysql.getPassword());
     System.setProperty("api.key", "valid-api-key");
     System.setProperty("spring.jpa.hibernate.ddl-auto", "create");
+    System.setProperty("spring.jpa.hibernate.naming.implicit-strategy",
+        "org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl");
+    System.setProperty("spring.jpa.hibernate.naming.physical-strategy",
+        "org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl");
 
     logger.info("MySQL URL : {}", mysql.getJdbcUrl());
   }
