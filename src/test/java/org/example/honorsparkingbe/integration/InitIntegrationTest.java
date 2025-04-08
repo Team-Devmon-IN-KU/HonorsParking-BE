@@ -73,6 +73,7 @@ public class InitIntegrationTest {
     System.setProperty("spring.datasource.username", mysql.getUsername());
     System.setProperty("spring.datasource.password", mysql.getPassword());
     System.setProperty("api.key", "valid-api-key");
+    System.setProperty("spring.jpa.hibernate.ddl-auto", "create");
 
     logger.info("MySQL URL : {}", mysql.getJdbcUrl());
   }
