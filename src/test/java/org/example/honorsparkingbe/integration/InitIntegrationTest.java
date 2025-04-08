@@ -13,6 +13,8 @@ import org.example.honorsparkingbe.repository.internal.CarRepository;
 import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -41,6 +43,8 @@ import org.testcontainers.utility.DockerImageName;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @TestPropertySource(locations = "classpath:application-integration-test.yml")
 public class InitIntegrationTest {
+
+  protected static final Logger logger = LoggerFactory.getLogger(InitIntegrationTest.class);
 
   // WebTestClient를 주입받아 HTTP 요청을 테스트할 수 있도록 설정
   @Autowired
@@ -71,6 +75,8 @@ public class InitIntegrationTest {
     System.setProperty("spring.datasource.username", mysql.getUsername());
     System.setProperty("spring.datasource.password", mysql.getPassword());
     System.setProperty("api.key", "valid-api-key");
+
+    logger.info("MySQL URL : {}", mysql.getJdbcUrl());
   }
 
   @AfterAll
