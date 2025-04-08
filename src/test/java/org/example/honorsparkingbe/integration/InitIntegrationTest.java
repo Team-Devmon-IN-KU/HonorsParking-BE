@@ -18,7 +18,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -56,7 +55,6 @@ public class InitIntegrationTest {
   private static final int REDIS_PORT = 6379;
 
   @Container
-  @ServiceConnection
   static public GenericContainer<?> redis = new GenericContainer<>(
       DockerImageName.parse(REDIS_IMAGE))
       .withExposedPorts(REDIS_PORT)

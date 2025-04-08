@@ -79,22 +79,20 @@ tasks.named('test') {
 }
 
 test {
+    useJUnitPlatform()
     systemProperty 'spring.profiles.active', 'test'
 
     testLogging {
-        // 실패한 테스트만 로그 출력
-        events "failed"
+        // 모든 테스트 이벤트 출력
+        events "started", "passed", "skipped", "failed", "standard_out", "standard_error"
 
-        // 예외 전체 스택트레이스 출력
+        // 예외 전체 출력
         exceptionFormat "full"
         showExceptions true
         showCauses true
         showStackTraces true
-
-        // 실패한 테스트에 대해 디버그 레벨 상세 로그 출력
-        debug {
-            events "failed", "standard_error", "standard_out"
-            exceptionFormat "full"
-        }
     }
+
+    // System.out, System.err도 보여줌
+//    showStandardStreams = true
 }
