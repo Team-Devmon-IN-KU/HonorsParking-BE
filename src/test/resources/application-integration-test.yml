@@ -11,7 +11,7 @@ spring:
       mode: never
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: create
       naming:
         implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyJpaImpl
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
