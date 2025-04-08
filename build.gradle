@@ -84,7 +84,7 @@ test {
 
     testLogging {
         // 모든 테스트 이벤트 출력
-        events "started", "passed", "skipped", "failed", "standard_out", "standard_error"
+        events "failed"
 
         // 예외 전체 출력
         exceptionFormat "full"
@@ -92,7 +92,4 @@ test {
         showCauses true
         showStackTraces true
     }
-
-    // System.out, System.err도 보여줌
-//    showStandardStreams = true
 }
