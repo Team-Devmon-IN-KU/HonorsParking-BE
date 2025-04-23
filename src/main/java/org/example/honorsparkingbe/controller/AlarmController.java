@@ -1,5 +1,6 @@
 package org.example.honorsparkingbe.controller;
 
+import org.example.honorsparkingbe.security.util.SecurityUtil;
 import org.example.honorsparkingbe.service.AlarmService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -66,7 +67,8 @@ public class AlarmController {
     @GetMapping("/alarmUnread")
     public ResponseEntity<Map<String, Object>> getUnreadAlarms() {
         try{
-            Long memberId = getCurrentMemberId();
+            // Long memberId = getCurrentMemberId(); // 시현씨가 따로 구현한 걸로 OAuth2 실패(SecurityUtil 사용할 것)
+            Long memberId= SecurityUtil.getCurrentUserId();
             boolean hasUnread= alarmService.hasUnreadAlarms(memberId);
             return ResponseEntity.ok(Map.of("hasUnread", hasUnread));
         }catch (Exception e){

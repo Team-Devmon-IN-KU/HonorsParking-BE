@@ -1,7 +1,9 @@
 package org.example.honorsparkingbe.util;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import lombok.RequiredArgsConstructor;
+import org.example.honorsparkingbe.dto.NotificationQueueItem;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
@@ -10,7 +12,9 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class RedisUtil {
 
+  private static final String QUEUE_KEY = "notification:queue";
   private final RedisTemplate<String, Object> redisTemplate;
+  private final RedisTemplate<String, NotificationQueueItem> notificationRedisTemplate;
 
   // Redis에 값 저장 (만료 시간 지정 가능)
   public void set(String key, Object value, long timeout, TimeUnit unit) {
@@ -47,5 +51,25 @@ public class RedisUtil {
   public String getApiKey() {
     Object apiKey = get("sync-server:api-key");
     return apiKey != null ? apiKey.toString() : null;
+  }
+  // Notification 큐(notification:queue) 관련 기능
+  // 1. 단일 객체 enqueue
+  public void notiEnqueue(NotificationQueueItem value) {
+    notificationRedisTemplate.opsForList().rightPush(QUEUE_KEY, value);
+  }
+
+  // 2. 여러 객체 한 번에 enqueue
+  public void notiEnqueueAll(List<NotificationQueueItem> values) {
+    notificationRedisTemplate.opsForList().rightPushAll(QUEUE_KEY, values);
+  }
+
+  // 3. 하나 dequeue (왼쪽 pop)
+  public NotificationQueueItem notiDequeue() {
+    return notificationRedisTemplate.opsForList().leftPop(QUEUE_KEY);
+  }
+
+  // 4. 큐 길이 확인 (선택)
+  public Long notiQueueSize() {
+    return notificationRedisTemplate.opsForList().size(QUEUE_KEY);
   }
 }

@@ -48,7 +48,7 @@ public class InitIntegrationTest {
   protected WebTestClient client;
 
   // Redis와 MySQL의 Docker 컨테이너 실행
-  private static final String MYSQL_IMAGE = "mysql:latest";
+  private static final String MYSQL_IMAGE = "mysql:8.0";
   private static final String REDIS_IMAGE = "redis:latest";
   private static final int REDIS_PORT = 6379;
 

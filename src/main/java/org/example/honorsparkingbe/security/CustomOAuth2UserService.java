@@ -35,7 +35,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     String registrationId = userRequest.getClientRegistration().getRegistrationId();
     OAuth2Response oAuth2Response = null;
 
-    String role = "ROLE_USER";
+    String role = "ROLE_NONE";
     Long memberId = null;
 
     // Provider마다 데이터를 주는 방식이 다르기에 다르게 처리(8강)
@@ -67,6 +67,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         memberId = memberEntity.getId();
       } else {
         memberId = existData.getId();
+        role= existData.getRole().toString();
       }
     } else if (registrationId.equals("google")) {
       oAuth2Response = new GoogleResponse(oAuth2User.getAttributes());
@@ -88,6 +89,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         memberId = memberEntity.getId();
       } else {
         memberId = existData.getId();
+        role= existData.getRole().toString();
       }
     } else if (registrationId.equals("kakao")) {
       oAuth2Response = new KakaoResponse(oAuth2User.getAttributes());
@@ -116,6 +118,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         memberId = memberEntity.getId();
       } else {
         memberId = existData.getId();
+        role= existData.getRole().toString();
       }
     } else {
       return null;

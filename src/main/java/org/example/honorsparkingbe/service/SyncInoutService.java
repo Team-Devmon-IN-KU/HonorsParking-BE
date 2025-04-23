@@ -1,5 +1,6 @@
 package org.example.honorsparkingbe.service;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -10,8 +11,12 @@ import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
 import org.example.honorsparkingbe.domain.entity.PayEntity;
+import org.example.honorsparkingbe.domain.enums.NotiChannel;
+import org.example.honorsparkingbe.domain.enums.NotiEventType;
 import org.example.honorsparkingbe.domain.enums.PaymentType;
+import org.example.honorsparkingbe.dto.NotificationQueueItem;
 import org.example.honorsparkingbe.dto.request.SyncInoutRequest;
+import org.example.honorsparkingbe.dto.request.SyncInoutRequest.Inout;
 import org.example.honorsparkingbe.dto.response.SyncInoutResponse;
 import org.example.honorsparkingbe.dto.response.SyncInoutResponse.ParkingEntry;
 import org.example.honorsparkingbe.repository.internal.CarRepository;
@@ -19,6 +24,7 @@ import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.example.honorsparkingbe.repository.internal.PayRepository;
+import org.example.honorsparkingbe.util.RedisUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,11 +33,12 @@ import org.springframework.transaction.annotation.Transactional;
 public class SyncInoutService {
 
   private final ParkingHistoryRepository parkingHistoryRepository;
-
   private final CarRepository carRepository;
   private final ParkingZoneRepository parkingZoneRepository;
   private final MemberRepository memberRepository;
   private final PayRepository payRepository;
+
+  private final RedisUtil redisUtil;
 
   @Transactional
   public SyncInoutResponse syncParkingHistory(SyncInoutRequest request) {
@@ -54,13 +61,13 @@ public class SyncInoutService {
     // 회원 등록된 차량만 Response DTO내의 배열로 처리 같은
     List<SyncInoutRequest.Inout> filteredNewMemberInoutList = request.getInoutList().stream()
         .filter(inout -> carNumberToCarMap.containsKey(inout.getVehicleNumber())) // 존재하는 차량만 필터링
-        .collect(Collectors.groupingBy(inout -> inout.getEntryId())) // entryId가 같으면 그룹화
+        .collect(Collectors.groupingBy(Inout::getEntryId)) // entryId가 같으면 그룹화
         .values().stream()
         .map(group -> group.get(0)) // 그룹화된 첫 번째 요소를 가져옴 (entryId가 같은 항목을 하나로 합침)
         .collect(Collectors.toList());
     // 2. DB에서 차량 번호 리스트에 해당하는 회원 엔티티 조회
     List<MemberEntity> memberEntities = memberRepository.findAllByCarEntity_CarNumberIn(
-        registeredCars.stream().map(carEntity -> carEntity.getCarNumber()).toList());
+        registeredCars.stream().map(CarEntity::getCarNumber).toList());
 
     // 3. 차량 번호(CarNumber)를 Key로, MemberEntity를 Value로 하는 Map 생성 (검색을 위한)
     Map<String, MemberEntity> carNumberToMemberMap = memberEntities.stream()
@@ -93,7 +100,7 @@ public class SyncInoutService {
     // 검색 속도를 위한 pay Map생성
     Map<Long, PayEntity> entryIdToPayEntityMap = savedPayEntities.stream()
         .collect(Collectors.toMap(
-            payEntity -> payEntity.getId(),  // Key entryId로 사용
+            PayEntity::getId,  // Key entryId로 사용
             payEntity -> payEntity           // PayEntity를 값으로 사용
         ));
 
@@ -112,6 +119,7 @@ public class SyncInoutService {
     // 7. ParkingHistory를 저장 시도 하고 실패시에 에러를 던짐
     try {
       parkingHistoryRepository.bulkInsertAndUpdate(parkingHistoryEntities);
+      enqueueRedisNotification(filteredNewMemberInoutList, carNumberToMemberMap);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException("주차 기록 저장 중 오류 발생", e);
@@ -177,8 +185,6 @@ public class SyncInoutService {
               .build();
         })
         .collect(Collectors.toList()); // ParkingHistoryEntity 리스트로 반환
-
-
   }
 
   /**
@@ -223,5 +229,41 @@ public class SyncInoutService {
       }
       System.out.println("-----------------------------------------------------");
     });
+  }
+
+  /**
+   * Notification 큐에 DB에 저장 성공한 데이터 인큐
+   *
+   * @param filteredNewMemberInoutList
+   * @param carNumberToMemberMap
+   */
+  private void enqueueRedisNotification(
+      List<SyncInoutRequest.Inout> filteredNewMemberInoutList,
+      Map<String, MemberEntity> carNumberToMemberMap
+  ) {
+    List<NotificationQueueItem> newNotificationQueueItems = new ArrayList<>();
+    System.out.println("filteredNewMemberInoutList 아이템 개수!!" + filteredNewMemberInoutList.size());
+
+    for (SyncInoutRequest.Inout inout : filteredNewMemberInoutList) {
+
+      MemberEntity member = carNumberToMemberMap.get(inout.getVehicleNumber());
+
+      newNotificationQueueItems.add(
+          NotificationQueueItem.builder()
+              // TODO 일단 모두 카카오 알림으로 설정
+              .notiChannel(NotiChannel.KAKAO)
+              .notiEventType(inout.getExitTime() == null ? NotiEventType.ENTRY : NotiEventType.EXIT)
+              .phoneNumber(member.getPhoneNumber())
+              .carNumber(inout.getVehicleNumber())
+              .entranceTime(inout.getEntryTime())
+              .retryCount(0)
+              .build()
+      );
+
+
+    }
+
+    redisUtil.notiEnqueueAll(newNotificationQueueItems);
+
   }
 }

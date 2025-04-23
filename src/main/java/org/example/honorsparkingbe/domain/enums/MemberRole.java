@@ -3,6 +3,7 @@ package org.example.honorsparkingbe.domain.enums;
 import org.springframework.security.core.GrantedAuthority;
 
 public enum MemberRole implements GrantedAuthority {
+    ROLE_NONE,
     ROLE_ADMIN,
     ROLE_USER;
 

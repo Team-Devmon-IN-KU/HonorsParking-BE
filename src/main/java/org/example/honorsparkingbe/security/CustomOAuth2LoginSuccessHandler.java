@@ -1,9 +1,8 @@
 package org.example.honorsparkingbe.security;
 /**
- * OAuth2 성공 핸들러
+ * OAuth2 성공 핸들러 (리다이렉트만 수행)
  */
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.example.honorsparkingbe.dto.CustomOAuth2User;
 import org.example.honorsparkingbe.dto.OAuth2Response;
 import org.springframework.security.core.Authentication;
@@ -12,57 +11,21 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        // CustomOAuth2User로 캐스팅
-        CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-        OAuth2Response oAuth2Response = customOAuth2User.getOAuth2Response();
+        // 로그인 성공 후 프론트엔드로 리디렉트
+        // response.sendRedirect("http://localhost:3000/");
+        // response.sendRedirect("https://honorsparking-web.vercel.app/");
+        CustomOAuth2User user = (CustomOAuth2User) authentication.getPrincipal();
+        String role= user.getAuthorities().iterator().next().getAuthority();
 
-        // JSON 응답 데이터 구성
-        Map<String, Object> responseData = new HashMap<>();
-
-        String provider = oAuth2Response.getProvider();
-        // responseData.put("provider", provider);
-
-
-        switch (provider) {
-            case "google":
-                // Google의 경우
-                responseData.put("email", oAuth2Response.getEmail());
-                responseData.put("displayName", oAuth2Response.getName());
-                break;
-
-            case "kakao":
-                // Kakao의 경우
-                responseData.put("nickname", oAuth2Response.getName());
-                responseData.put("phone_number", oAuth2Response.getPhoneNumber());
-                responseData.put("email", oAuth2Response.getEmail());
-                responseData.put("birthyear", oAuth2Response.getBirthYear());
-                responseData.put("birthday", oAuth2Response.getBirthday());
-                break;
-
-            case "naver":
-                // Naver의 경우
-                responseData.put("name", oAuth2Response.getName());
-                responseData.put("mobile", oAuth2Response.getPhoneNumber());
-                responseData.put("email", oAuth2Response.getEmail());
-                responseData.put("birthyear", oAuth2Response.getBirthYear());
-                responseData.put("birthday", oAuth2Response.getBirthday());
-                break;
-
-            default:
-                response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Unsupported provider: " + provider);
-                return;
+        if("ROLE_USER".equals(role)){
+            response.sendRedirect("https://honorsparking-web.vercel.app/");
+        }else{
+            response.sendRedirect("https://honorsparking-web.vercel.app/hello");
         }
-
-        // JSON 반환
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        new ObjectMapper().writeValue(response.getWriter(), responseData);
     }
 }

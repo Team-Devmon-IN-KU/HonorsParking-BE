@@ -7,7 +7,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
-import java.util.Map;
+import org.example.honorsparkingbe.dto.request.SyncInoutRequest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -33,7 +33,10 @@ public class ApiKeyAuthFilterUnitTest {
 
   @Test
   void API_KEY가_정상적으로_인증되면_200_OK() throws Exception {
-    String requestBody = objectMapper.writeValueAsString(Map.of("inoutList", List.of()));
+    SyncInoutRequest request = new SyncInoutRequest();
+    request.setInoutList(List.of());
+
+    String requestBody = objectMapper.writeValueAsString(request);
 
     mockMvc.perform(post("/api/v1/sync/inout")
             .header("X-API-KEY", "valid-api-key")

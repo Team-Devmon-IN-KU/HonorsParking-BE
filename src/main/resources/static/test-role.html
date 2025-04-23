@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Role Change</title>
+</head>
+<body>
+<h2>Role Change</h2>
+<button onclick="convertRole()">chagne ROLE</button>
+
+<script>
+    async function convertRole() {
+        const res = await fetch("http://localhost:8080/api/v1/role", {
+            method: "PUT",
+            credentials: "include", // 세션 쿠키 전송
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({})
+        });
+
+        const text = await res.text();
+        alert("response: " + text);
+    }
+</script>
+</body>
+</html>

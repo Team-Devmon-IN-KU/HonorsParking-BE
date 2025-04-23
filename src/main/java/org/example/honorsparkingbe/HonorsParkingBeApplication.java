@@ -8,9 +8,9 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 @EnableScheduling
 public class HonorsParkingBeApplication {
 
-    public static void main(String[] args) {
-        SpringApplication.run(HonorsParkingBeApplication.class, args);
-    }
+  public static void main(String[] args) {
+    SpringApplication.run(HonorsParkingBeApplication.class, args);
+  }
 
 }
 

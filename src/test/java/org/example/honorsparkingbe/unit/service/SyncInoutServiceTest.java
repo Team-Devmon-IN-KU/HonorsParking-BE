@@ -1,8 +1,8 @@
 package org.example.honorsparkingbe.unit.service;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doNothing;
@@ -23,7 +23,10 @@ import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
 import org.example.honorsparkingbe.domain.entity.PayEntity;
 import org.example.honorsparkingbe.domain.enums.CarType;
 import org.example.honorsparkingbe.domain.enums.MemberRole;
+import org.example.honorsparkingbe.domain.enums.NotiChannel;
+import org.example.honorsparkingbe.domain.enums.NotiEventType;
 import org.example.honorsparkingbe.domain.enums.PaymentType;
+import org.example.honorsparkingbe.dto.NotificationQueueItem;
 import org.example.honorsparkingbe.dto.request.SyncInoutRequest;
 import org.example.honorsparkingbe.dto.request.SyncInoutRequest.Inout;
 import org.example.honorsparkingbe.dto.response.SyncInoutResponse;
@@ -34,10 +37,12 @@ import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.example.honorsparkingbe.repository.internal.PayRepository;
 import org.example.honorsparkingbe.service.SyncInoutService;
+import org.example.honorsparkingbe.util.RedisUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -63,6 +68,8 @@ public class SyncInoutServiceTest {
   private ParkingZoneRepository parkingZoneRepository;
   @Mock
   private PayRepository payRepository;
+  @Mock
+  private RedisUtil redisUtil;
 
   CarEntity entryOnlyCar;
   CarEntity exitedCar;
@@ -187,6 +194,8 @@ public class SyncInoutServiceTest {
         .paidAt(exitCarpay.getPaidAt())
         .build()));
     doNothing().when(parkingHistoryRepository).bulkInsertAndUpdate(anyList());
+    doNothing().when(redisUtil).notiEnqueueAll(anyList());
+
     // WHEN
     SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
 
@@ -212,6 +221,27 @@ public class SyncInoutServiceTest {
         .bulkInsertAndUpdate(anyList());
     verify(parkingHistoryRepository, times(1))
         .bulkInsertAndUpdate(anyList());
+
+    // ✅ ArgumentCaptor로 실제 Redis에 저장된 값 검증
+    ArgumentCaptor<List<NotificationQueueItem>> captor = ArgumentCaptor.forClass(List.class);
+    verify(redisUtil, times(1)).notiEnqueueAll(captor.capture());
+
+    List<NotificationQueueItem> capturedItems = captor.getValue();
+    assertEquals(2, capturedItems.size()); // 예: 두 개 차량 알람큐에 인큐
+
+    NotificationQueueItem first = capturedItems.get(0);
+    assertEquals(NotiChannel.KAKAO, first.getNotiChannel());
+    assertEquals(NotiEventType.ENTRY, first.getNotiEventType());
+    assertEquals(entryOnlyMember.getPhoneNumber(), first.getPhoneNumber());
+    assertEquals(entryOnlyInout.getVehicleNumber(), first.getCarNumber());
+    assertEquals(entryOnlyInout.getEntryTime(), first.getEntranceTime());
+
+    NotificationQueueItem second = capturedItems.get(1);
+    assertEquals(NotiChannel.KAKAO, second.getNotiChannel());
+    assertEquals(NotiEventType.EXIT, second.getNotiEventType());
+    assertEquals(exitMember.getPhoneNumber(), second.getPhoneNumber());
+    assertEquals(exitedInout.getVehicleNumber(), second.getCarNumber());
+    assertEquals(exitedInout.getEntryTime(), second.getEntranceTime());
 
   }
 
@@ -240,6 +270,8 @@ public class SyncInoutServiceTest {
         .paidAt(exitCarpay.getPaidAt())
         .build()));
     doNothing().when(parkingHistoryRepository).bulkInsertAndUpdate(anyList());
+    doNothing().when(redisUtil).notiEnqueueAll(anyList());
+
     // WHEN
     SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
 
@@ -262,6 +294,27 @@ public class SyncInoutServiceTest {
     verify(parkingZoneRepository, times(1)).findAllByIdIn(eq(List.of(1L)));
     verify(payRepository, times(1)).bulkInsertAndUpdate(anyList());
     verify(parkingHistoryRepository, times(1)).bulkInsertAndUpdate(anyList());
+
+    // ✅ ArgumentCaptor로 실제 Redis에 저장된 값 검증
+    ArgumentCaptor<List<NotificationQueueItem>> captor = ArgumentCaptor.forClass(List.class);
+    verify(redisUtil, times(1)).notiEnqueueAll(captor.capture());
+
+    List<NotificationQueueItem> capturedItems = captor.getValue();
+    assertEquals(2, capturedItems.size()); // 예: 두 개 차량 알람큐에 인큐
+
+    NotificationQueueItem first = capturedItems.get(0);
+    assertEquals(NotiChannel.KAKAO, first.getNotiChannel());
+    assertEquals(NotiEventType.ENTRY, first.getNotiEventType());
+    assertEquals(entryOnlyMember.getPhoneNumber(), first.getPhoneNumber());
+    assertEquals(entryOnlyInout.getVehicleNumber(), first.getCarNumber());
+    assertEquals(entryOnlyInout.getEntryTime(), first.getEntranceTime());
+
+    NotificationQueueItem second = capturedItems.get(1);
+    assertEquals(NotiChannel.KAKAO, second.getNotiChannel());
+    assertEquals(NotiEventType.EXIT, second.getNotiEventType());
+    assertEquals(exitMember.getPhoneNumber(), second.getPhoneNumber());
+    assertEquals(exitedInout.getVehicleNumber(), second.getCarNumber());
+    assertEquals(exitedInout.getEntryTime(), second.getEntranceTime());
   }
 
   @DisplayName("비회원 차량만 있을 때 빈배열이 반환되는지 확인")
@@ -305,6 +358,7 @@ public class SyncInoutServiceTest {
         .thenReturn(List.of(entryOnlyMember));
     when(parkingZoneRepository.findAllByIdIn(List.of(1L))).thenReturn(List.of(sampleParkingZone));
     doNothing().when(parkingHistoryRepository).bulkInsertAndUpdate(anyList());
+    doNothing().when(redisUtil).notiEnqueueAll(anyList());
 
     // WHEN
     SyncInoutResponse response = syncInoutService.syncParkingHistory(syncInoutRequest);
@@ -330,5 +384,18 @@ public class SyncInoutServiceTest {
     verify(parkingHistoryRepository, times(1))
         .bulkInsertAndUpdate(anyList());
 
+    // ✅ ArgumentCaptor로 실제 Redis에 저장된 값 검증
+    ArgumentCaptor<List<NotificationQueueItem>> captor = ArgumentCaptor.forClass(List.class);
+    verify(redisUtil, times(1)).notiEnqueueAll(captor.capture());
+
+    List<NotificationQueueItem> capturedItems = captor.getValue();
+    assertEquals(1, capturedItems.size()); // 예: 두 개 차량 알람큐에 인큐
+
+    NotificationQueueItem first = capturedItems.get(0);
+    assertEquals(NotiChannel.KAKAO, first.getNotiChannel());
+    assertEquals(NotiEventType.ENTRY, first.getNotiEventType());
+    assertEquals(entryOnlyMember.getPhoneNumber(), first.getPhoneNumber());
+    assertEquals(entryOnlyInout.getVehicleNumber(), first.getCarNumber());
+    assertEquals(entryOnlyInout.getEntryTime(), first.getEntranceTime());
   }
 }
