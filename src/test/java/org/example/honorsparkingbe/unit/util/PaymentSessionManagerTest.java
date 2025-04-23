@@ -17,7 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import org.example.honorsparkingbe.domain.session.PaymentSessionManager;
-import org.example.honorsparkingbe.util.RedisUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

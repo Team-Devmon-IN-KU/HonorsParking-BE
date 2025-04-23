@@ -71,11 +71,11 @@ public class SecurityConfig {
                     "/confirm",
                     "/swagger-ui/**",
                     "/v3/api-docs/**",
-                    "api/v1/auth/check-authId"
+                    "/api/v1/auth/check-authId"
             ).permitAll()
             .requestMatchers("/api/v1/", "/api/v1/auth/login/**", "/api/v1/auth/join", "/confirm",
-                "/swagger-ui/**", "/v3/api-docs/**", "api/v1/auth/check-authId",
-                "api/v1/sync/inout").permitAll()
+                "/swagger-ui/**", "/v3/api-docs/**", "/api/v1/auth/check-authId",
+                "/api/v1/sync/inout").permitAll()
             .requestMatchers("/api/v1/admin").hasRole("ADMIN")                  // 해당 role만 접근 가능
             .requestMatchers("/api/v1/my/**").hasAnyRole("ADMIN", "USER") // /api/v1/my/**만 허용
             .anyRequest().authenticated()
@@ -170,5 +170,4 @@ public class SecurityConfig {
     serializer.setSameSite("None"); // 크로스 사이트 요청에서 쿠키 허용
     return serializer;
   }
-
 }
