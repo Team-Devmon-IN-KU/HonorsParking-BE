@@ -10,11 +10,13 @@ import org.example.honorsparkingbe.repository.internal.CityRepository;
 import org.example.honorsparkingbe.repository.internal.DistrictRepository;
 import org.example.honorsparkingbe.repository.internal.EupMyeonDongRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Profile("!performanceTest")
 public class CreateParkingZoneList {
 
   private final CityRepository cityRepository;
