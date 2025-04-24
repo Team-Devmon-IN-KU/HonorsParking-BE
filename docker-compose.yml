@@ -22,18 +22,19 @@ services:
     volumes:
       - mysql-data:/var/lib/mysql
 
-#  backend:
-#    container_name: honorsParking
-#    platform: linux/amd64
-#    build: .
-#    ports:
-#      - "8080:8080"
-#    environment:
-#      db-url: jdbc:mysql://db:3306/parking
-#      db-username: user
-#      db-password: 1234
-#      redis-host: redis
-#      redis-port: 6379
+  backend:
+    container_name: honorsParking
+    platform: linux/amd64
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      db-url: jdbc:mysql://db:3306/parking
+      db-username: user
+      db-password: 1234
+      redis-host: redis
+      redis-port: 6379
+      SPRING_PROFILES_ACTIVE: performanceTest
 
 volumes:
   mysql-data:
