@@ -9,6 +9,7 @@ import org.example.honorsparkingbe.domain.entity.EupMyeonDongEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingFeeRuleEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingZoneEntity;
 import org.example.honorsparkingbe.domain.enums.CarType;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
  * 1) 가상의 주차장을 30개 만들어야함 값은 랜덤하게 들어가는 것으로 합니다. 또한 이에 맞는 요금규칙도 만들어야합니다. 2) 3) 유저 3명을 만듭니다.
  */
 @Component
+@Profile("performanceTest")
 public class CreateParkingZonesInPerformanceTest extends PerformanceCheckInit {
 
   @PostConstruct

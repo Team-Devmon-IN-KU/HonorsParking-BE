@@ -1,7 +1,7 @@
-spring:
-  config:
-    activate:
-      on-profile: performanceTest
-  jpa:
-    hibernate:
-      ddl-auto: create-drop
+#spring:
+#  config:
+#    activate:
+#      on-profile: performanceTest
+#  jpa:
+#    hibernate:
+#      ddl-auto: create-drop

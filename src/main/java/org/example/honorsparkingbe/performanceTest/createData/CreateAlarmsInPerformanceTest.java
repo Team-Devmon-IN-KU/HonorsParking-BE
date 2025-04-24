@@ -9,10 +9,12 @@ import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.enums.AlarmType;
 import org.example.honorsparkingbe.domain.enums.IsRead;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 @Component
+@Profile("performanceTest")
 @DependsOn({"createParkingZonesInPerformanceTest", "createUsersInPerformanceTest"})
 public class CreateAlarmsInPerformanceTest extends PerformanceCheckInit {
 
