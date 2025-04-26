@@ -3,6 +3,7 @@ package org.example.honorsparkingbe.performanceTest.createData;
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import org.example.honorsparkingbe.domain.entity.CityEntity;
 import org.example.honorsparkingbe.domain.entity.DistrictEntity;
 import org.example.honorsparkingbe.domain.entity.EupMyeonDongEntity;
@@ -48,10 +49,13 @@ public class CreateParkingZonesInPerformanceTest extends PerformanceCheckInit {
         EupMyeonDongEntity.builder().name("도마동").build());
 
     for (int i = 0; i < size; i++) {
+      double randomLatitude = ThreadLocalRandom.current().nextDouble(33.0, 38.5);
+      double randomLongitude = ThreadLocalRandom.current().nextDouble(124.0, 132.0);
+
       ParkingZoneEntity newParkingZone = ParkingZoneEntity.builder()
           .zoneName("Performance Parking Lot" + i)
           .size(10).maxCost(100000)
-          .latitude(37.4979).longitude(127.0276)
+          .latitude(randomLatitude).longitude(randomLongitude)
           .cityEntity(seoul).districtEntity(gangnam).eupMyeonDongEntity(doma)
           .thumbnailUrl(
               "https://res.cloudinary.com/dhabktrg9/image/upload/v1739866539/seblxkuswovn9w1mu5em.png")
