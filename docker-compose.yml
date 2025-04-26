@@ -24,7 +24,11 @@ services:
 
   backend:
     container_name: honorsParking
-    platform: linux/amd64
+    depends_on:
+      - db
+      - redis
+    #    platform: linux/amd64
+    platform: linux/arm64
     build: .
     ports:
       - "8080:8080"
