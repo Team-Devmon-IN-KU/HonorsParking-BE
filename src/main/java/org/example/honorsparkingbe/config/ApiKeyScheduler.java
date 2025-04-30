@@ -17,7 +17,6 @@ public class ApiKeyScheduler {
   public void rotateApiKeyMonthly() {
     String newKey = apiKeyService.rotateApiKey();
     System.out.println("[API Key 자동 갱신] 새로운 키: " + newKey);
-    // 필요하면 로그 파일로 남기거나 알림 전송 가능
   }
 }
 
