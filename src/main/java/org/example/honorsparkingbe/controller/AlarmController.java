@@ -39,7 +39,12 @@ public class AlarmController {
             @RequestParam(defaultValue = "20") int size) {
 
         try {
-            Long memberId = getCurrentMemberId();
+            // SecurityUtil 사용하도록 변경
+            // Controller에서도 memberId == null 체크를 넣는 건 방어적 코딩 + 명확한 API 에러 처리 차원에서 추천된다고 합니다.
+            Long memberId = SecurityUtil.getCurrentUserId();
+            if (memberId == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
+            }
 
             // JPA 에서는 page 0부터 시작하므로
             int adjustedPage = Math.max(page - 1, 0); // 음수 방지
@@ -69,6 +74,11 @@ public class AlarmController {
         try{
             // Long memberId = getCurrentMemberId(); // 시현씨가 따로 구현한 걸로 OAuth2 실패(SecurityUtil 사용할 것)
             Long memberId= SecurityUtil.getCurrentUserId();
+
+            if (memberId == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
+            }
+
             boolean hasUnread= alarmService.hasUnreadAlarms(memberId);
             return ResponseEntity.ok(Map.of("hasUnread", hasUnread));
         }catch (Exception e){
@@ -125,7 +135,12 @@ public class AlarmController {
     @DeleteMapping("/alarm/all")
     public ResponseEntity<Map<String, Object>> deleteAllAlarms() {
         try {
-            Long memberId = getCurrentMemberId(); // 로그인한 사용자 ID 가져오기
+            // SecurityUtil 사용하도록 변경
+            Long memberId = SecurityUtil.getCurrentUserId();
+            if (memberId == null) {
+                return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
+            }
+
             Map<String, Object> response = alarmService.deleteAllAlarms(memberId);
             return ResponseEntity.ok(response);
         } catch (IllegalStateException e) {  // 인증되지 않은 경우 예외 처리
@@ -135,45 +150,45 @@ public class AlarmController {
         }
     }
 
-    /**
-     * 현재 로그인한 사용자의 memberId 가져오기
-     * 일반 로그인: UserDetails에서 authId 가져와서 memberId 조회
-     * 소셜 로그인: OAuth2User에서 socialId 가져와서 memberId 조회
-     * @return memberId
-     */
-    private Long getCurrentMemberId() {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
-        if (authentication == null || !authentication.isAuthenticated()) {
-            throw new IllegalStateException("User is not authenticated");
-        }
-
-        Object principal = authentication.getPrincipal();
-        System.out.println("Principal: " + principal.getClass().getName()); // 디버깅 로그
-
-        // 일반 로그인 처리 (UserDetails 기반)
-        if (principal instanceof UserDetails userDetails) {
-            return findMemberIdByAuthId(userDetails.getUsername()); // authId → memberId 조회
-        }
-
-        // 소셜 로그인 처리 (OAuth2User)
-        if (principal instanceof OAuth2User oAuth2User) {
-            String authId = (String) oAuth2User.getAttribute("sub"); // 소셜 로그인 고유 ID
-            return findMemberIdByAuthId(authId);  // 🔥 authId로 memberId 조회
-        }
-
-        throw new IllegalStateException("Invalid user authentication data");
-    }
-
-    /**
-     * 로그인 사용자의 authId로 memberId 조회
-     */
-    private Long findMemberIdByAuthId(String authId) {
-        Long memberId = alarmService.findMemberIdByAuthId(authId);
-        if (memberId == null) {
-            throw new IllegalStateException("User not found with authId: " + authId);
-        }
-        return memberId;
-    }
+//    /**
+//     * 현재 로그인한 사용자의 memberId 가져오기
+//     * 일반 로그인: UserDetails에서 authId 가져와서 memberId 조회
+//     * 소셜 로그인: OAuth2User에서 socialId 가져와서 memberId 조회
+//     * @return memberId
+//     */
+//    private Long getCurrentMemberId() {
+//        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+//
+//        if (authentication == null || !authentication.isAuthenticated()) {
+//            throw new IllegalStateException("User is not authenticated");
+//        }
+//
+//        Object principal = authentication.getPrincipal();
+//        System.out.println("Principal: " + principal.getClass().getName()); // 디버깅 로그
+//
+//        // 일반 로그인 처리 (UserDetails 기반)
+//        if (principal instanceof UserDetails userDetails) {
+//            return findMemberIdByAuthId(userDetails.getUsername()); // authId → memberId 조회
+//        }
+//
+//        // 소셜 로그인 처리 (OAuth2User)
+//        if (principal instanceof OAuth2User oAuth2User) {
+//            String authId = (String) oAuth2User.getAttribute("sub"); // 소셜 로그인 고유 ID
+//            return findMemberIdByAuthId(authId);  // 🔥 authId로 memberId 조회
+//        }
+//
+//        throw new IllegalStateException("Invalid user authentication data");
+//    }
+//
+//    /**
+//     * 로그인 사용자의 authId로 memberId 조회
+//     */
+//    private Long findMemberIdByAuthId(String authId) {
+//        Long memberId = alarmService.findMemberIdByAuthId(authId);
+//        if (memberId == null) {
+//            throw new IllegalStateException("User not found with authId: " + authId);
+//        }
+//        return memberId;
+//    }
 
 }

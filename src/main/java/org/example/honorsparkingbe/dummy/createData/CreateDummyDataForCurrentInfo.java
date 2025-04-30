@@ -19,6 +19,7 @@ import org.example.honorsparkingbe.repository.internal.ParkingFeeRuleRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingZoneRepository;
 import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @DependsOn("createParkingZoneList")  // ParkingZoneList가 먼저 생성되도록 설정
+@Profile("!performanceTest")
 public class CreateDummyDataForCurrentInfo {
 
   private final CarRepository carRepository;
