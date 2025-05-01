@@ -24,9 +24,7 @@ jobs:
       - name: application.yml 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          cat <<EOF > ./src/main/resources/config/application.yml
-          ${{ secrets.APPLICATION_YML }}
-          EOF
+          echo '${{ secrets.APPLICATION_YML }}' > ./src/main/resources/config/application.yml
 
       - name: application.yml 내용 확인 (디버그용)
         run: |
@@ -38,9 +36,7 @@ jobs:
       - name: application.properties 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          cat <<EOF > ./src/main/resources/config/application.properties
-          ${{ secrets.APPLICATION_PROPERTIES }}
-          EOF
+          echo '${{ secrets.APPLICATION_PROPERTIES }}' > ./src/main/resources/config/application.properties
 
       - name: application.properties 내용 확인 (디버그용)
         run: |
