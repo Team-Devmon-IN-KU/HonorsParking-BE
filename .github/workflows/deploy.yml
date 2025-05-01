@@ -15,28 +15,27 @@ jobs:
         # 레포지토리에 저장되어있는 코드 불러오는 라이브러리
         uses: actions/checkout@v4
 
-      # Github Actions에 빌드, 테스트 할 때 필요한 JDK 설치
+      # 테스트 할 때 필요한 JDK 설치
       - name: JDK 21 설치 (Oracle)
         uses: actions/setup-java@v4
         with:
           distribution: oracle
           java-version: 21
 
-      # application.yml 파일 생성
+      # application.yml파일 추가
       - name: application.yml 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/config/application.yml
-
-      # application.properties 파일 생성
+          echo '${{ secrets.APPLICATION_YML }}' > ./src/main/resources/config/application.yml
+      # application.properties파일 추가
       - name: application.properties 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/config/application.properties
+          echo '${{ secrets.APPLICATION_PROPERTIES }}' > ./src/main/resources/config/application.properties
 
-
+      # 테스트 빌드
       - name: 테스트 및 빌드하기
-        run: ./gradlew clean build -x test
+        run: ./gradlew clean build
 
       # AWS 접근 가능 권한 받기
       - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
