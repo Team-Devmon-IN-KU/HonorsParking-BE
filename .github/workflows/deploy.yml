@@ -3,8 +3,8 @@ name: Deploy To EC2
 on:
   push:
     branches:
-      #      - fix/cicd
-      - develop
+      - fix/cicd
+#      - develop
 
 jobs:
   deploy:
@@ -15,35 +15,51 @@ jobs:
         # 레포지토리에 저장되어있는 코드 불러오는 라이브러리
         uses: actions/checkout@v4
 
-      # 테스트 할 때 필요한 JDK 설치
+      # Github Actions에 빌드, 테스트 할 때 필요한 JDK 설치
       - name: JDK 21 설치 (Oracle)
         uses: actions/setup-java@v4
         with:
           distribution: oracle
           java-version: 21
-
-      # application.yml파일 추가
       - name: application.yml 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          echo '${{ secrets.APPLICATION_YML }}' > ./src/main/resources/config/application.yml
-      # application.properties파일 추가
+          cat <<EOF > ./src/main/resources/config/application.yml
+          ${{ secrets.APPLICATION_YML }}
+          EOF
+
+      - name: application.yml 내용 확인 (디버그용)
+        run: |
+          echo "📂 application.yml 파일 내용:"
+          echo "----------------------------------"
+          cat ./src/main/resources/config/application.yml
+          echo "----------------------------------"
+
       - name: application.properties 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          echo '${{ secrets.APPLICATION_PROPERTIES }}' > ./src/main/resources/config/application.properties
+          cat <<EOF > ./src/main/resources/config/application.properties
+          ${{ secrets.APPLICATION_PROPERTIES }}
+          EOF
 
-      # 테스트 빌드
-      - name: 테스트 및 빌드하기
-        run: ./gradlew clean build
+      - name: application.properties 내용 확인 (디버그용)
+        run: |
+          echo "📂 application.properties 파일 내용:"
+          echo "----------------------------------"
+          cat ./src/main/resources/config/application.properties
+          echo "----------------------------------"
+      
 
-      # AWS 접근 가능 권한 받기
-      - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          aws-region: ap-northeast-2
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      #      - name: 테스트 및 빌드하기
+      #        run: ./gradlew clean build
+      #
+      #      # AWS 접근 가능 권한 받기
+      #      - name: AWS Resource에 접근할 수 있게 AWS credentials 설정
+      #        uses: aws-actions/configure-aws-credentials@v4
+      #        with:
+      #          aws-region: ap-northeast-2
+      #          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      #          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       # 도커 로그인 및 이미지 푸쉬
 
