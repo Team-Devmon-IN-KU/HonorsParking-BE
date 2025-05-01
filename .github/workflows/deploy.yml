@@ -26,15 +26,18 @@ jobs:
       - name: application.yml 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/config/application.yml
+          echo "${{ secrets.APPLICATION_YML }}" | sed 's/\${/\\${/g' > ./src/main/resources/config/application.yml
+
+      # application.yml 내용 확인 (디버그용)
       - name: application.yml 내용 확인 (디버그용)
         run: |
           cat ./src/main/resources/config/application.yml
+
       # application.properties 파일 생성
       - name: application.properties 파일 만들기
         run: |
           mkdir -p ./src/main/resources/config
-          echo "${{ secrets.APPLICATION_PROPERTIES }}" > ./src/main/resources/config/application.properties
+          echo "${{ secrets.APPLICATION_PROPERTIES }}" | sed 's/\${/\\${/g' > ./src/main/resources/config/application.properties
       
 
       #      - name: 테스트 및 빌드하기
