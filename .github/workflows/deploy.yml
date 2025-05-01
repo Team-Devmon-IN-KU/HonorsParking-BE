@@ -16,10 +16,10 @@ jobs:
         uses: actions/checkout@v4
 
       # Github Actions에 빌드, 테스트 할 때 필요한 JDK 설치
-      - name: JDK 21 설치
+      - name: JDK 21 설치 (Oracle)
         uses: actions/setup-java@v4
         with:
-          distribution: temurin
+          distribution: oracle
           java-version: 21
 
       # application.yml 파일 생성
