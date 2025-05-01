@@ -48,6 +48,13 @@ jobs:
           echo "----------------------------------"
           cat ./src/main/resources/config/application.properties
           echo "----------------------------------"
+
+      # 📦 아티팩트로 업로드
+      - name: 📤 설정파일 아티팩트로 업로드
+        uses: actions/upload-artifact@v4
+        with:
+          name: application-config-files
+          path: ./src/main/resources/config/
       
 
       #      - name: 테스트 및 빌드하기
