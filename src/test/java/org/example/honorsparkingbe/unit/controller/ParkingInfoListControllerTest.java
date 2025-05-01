@@ -94,6 +94,6 @@ public class ParkingInfoListControllerTest {
             .param("longitude", String.valueOf(request.getLongitude())))
         .andExpect(status().isOk());
 
-    verify(parkingZoneInfoService, times(1)).getParkingZones(any());
+    verify(parkingZoneInfoService, times(2)).getParkingZones(any());
   }
 }

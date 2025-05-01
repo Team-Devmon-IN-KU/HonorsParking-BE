@@ -1,5 +1,10 @@
 package org.example.honorsparkingbe.service;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import org.example.honorsparkingbe.domain.entity.CarEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingFeeRuleEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
@@ -8,12 +13,6 @@ import org.example.honorsparkingbe.domain.enums.CarType;
 import org.example.honorsparkingbe.repository.internal.ParkingFeeRuleRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
 import org.springframework.stereotype.Service;
-
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 @Service
 public class CurrentInfoService {
@@ -63,17 +62,17 @@ public class CurrentInfoService {
     List<ParkingFeeRuleEntity> feeRules = parkingFeeRuleRepository.findByParkingZoneEntityId(
         parkingZoneId); // 정상적으로 가져오고 있음
 
-    System.out.println("parkingZoneId: " + parkingZoneId);
-    System.out.println("feeRules: " + feeRules);
-    System.out.println("Parking Fee Rules for Zone ID " + parkingZoneId + ":");
-    feeRules.forEach(rule -> System.out.println(
-        "Rule Name: " + rule.getRuleName() +
-            ", CarType: " + rule.getCarType() +
-            ", StartTime: " + rule.getStartTime() +
-            ", EndTime: " + rule.getEndTime() +
-            ", CostPerTimeSlot: " + rule.getCostPerTimeSlot() +
-            ", CostTimeSlot: " + rule.getCostTimeSlot()
-    ));
+//    System.out.println("parkingZoneId: " + parkingZoneId);
+//    System.out.println("feeRules: " + feeRules);
+//    System.out.println("Parking Fee Rules for Zone ID " + parkingZoneId + ":");
+//    feeRules.forEach(rule -> System.out.println(
+//        "Rule Name: " + rule.getRuleName() +
+//            ", CarType: " + rule.getCarType() +
+//            ", StartTime: " + rule.getStartTime() +
+//            ", EndTime: " + rule.getEndTime() +
+//            ", CostPerTimeSlot: " + rule.getCostPerTimeSlot() +
+//            ", CostTimeSlot: " + rule.getCostTimeSlot()
+//    ));
 
     /**
      * 2. parkingHistory(latestHistory)에서 carId를 찾아 해당하는 자동차의 carType을 가져온다.
@@ -88,18 +87,18 @@ public class CurrentInfoService {
         .toList();
 
     // 3. 남은 튜플들을 출력하여 확인.
-    System.out.println("==================================================================");
-    System.out.println("Applicable Fee Rules for CarType: " + carType);
-    System.out.println("해당되는 규칙들");
-    for (ParkingFeeRuleEntity rule : applicableFeeRules) {
-      System.out.println("Rule Name: " + rule.getRuleName() +
-          ", CarType: " + rule.getCarType() +
-          ", StartTime: " + rule.getStartTime() +
-          ", EndTime: " + rule.getEndTime() +
-          ", CostPerTimeSlot: " + rule.getCostPerTimeSlot() +
-          ", CostTimeSlot: " + rule.getCostTimeSlot());
-    }
-    System.out.println("==================================================================");
+//    System.out.println("==================================================================");
+//    System.out.println("Applicable Fee Rules for CarType: " + carType);
+//    System.out.println("해당되는 규칙들");
+//    for (ParkingFeeRuleEntity rule : applicableFeeRules) {
+//      System.out.println("Rule Name: " + rule.getRuleName() +
+//          ", CarType: " + rule.getCarType() +
+//          ", StartTime: " + rule.getStartTime() +
+//          ", EndTime: " + rule.getEndTime() +
+//          ", CostPerTimeSlot: " + rule.getCostPerTimeSlot() +
+//          ", CostTimeSlot: " + rule.getCostTimeSlot());
+//    }
+//    System.out.println("==================================================================");
 
     /**
      * 현재시간과 entranceTime을 비교하여 몇 분 차이인지 계산
@@ -109,9 +108,9 @@ public class CurrentInfoService {
     Duration duration = Duration.between(entranceTime, now);
     long totalMinutesParked = duration.toMinutes(); // 주차한 총 시간(분)
 
-    System.out.println("Entrance Time: " + entranceTime);
-    System.out.println("Current Time: " + now);
-    System.out.println("Total Minutes Parked: " + totalMinutesParked);
+//    System.out.println("Entrance Time: " + entranceTime);
+//    System.out.println("Current Time: " + now);
+//    System.out.println("Total Minutes Parked: " + totalMinutesParked);
 
     /**
      * totalMinutesParked = 주차한 시간(분)
@@ -146,13 +145,13 @@ public class CurrentInfoService {
           ", Remaining Minutes: " + remainingMinutes);
 
       // 남은 시간이 0이면 종료
-        if (remainingMinutes <= 0) {
-            break;
-        }
+      if (remainingMinutes <= 0) {
+        break;
+      }
     }
 
     // 최종 요금 출력
-    System.out.println("Total Parking Cost: " + totalCost);
+//    System.out.println("Total Parking Cost: " + totalCost);
 
     // JSON 응답 형식 맞추기 ============================== 위에서 다 처리하고 대입 =======================
     Map<String, Object> parkingZoneInfo = new HashMap<>();
