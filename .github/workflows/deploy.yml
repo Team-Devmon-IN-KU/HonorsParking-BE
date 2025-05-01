@@ -27,7 +27,9 @@ jobs:
         run: |
           mkdir -p ./src/main/resources/config
           echo "${{ secrets.APPLICATION_YML }}" > ./src/main/resources/config/application.yml
-
+      - name: application.yml 내용 확인 (디버그용)
+        run: |
+          cat ./src/main/resources/config/application.yml
       # application.properties 파일 생성
       - name: application.properties 파일 만들기
         run: |
