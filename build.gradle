@@ -116,3 +116,4 @@ tasks.register("dockerBuildxMultiPlatform", Exec) {
         println "Building multi-platform Docker image: ${imageName}"
     }
 }
+

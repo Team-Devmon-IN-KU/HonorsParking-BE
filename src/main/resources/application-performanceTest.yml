@@ -9,11 +9,10 @@ spring:
       hibernate.show_sql: false
       hibernate.format_sql: false
       hibernate.use_sql_comments: false
-
 logging:
   level:
-    root: OFF  # 전체 로그 끔
-    org.hibernate: OFF  # Hibernate 전체 끔
-    org.hibernate.SQL: OFF  # SQL 로그 끔
-    org.hibernate.type.descriptor.sql.BasicBinder: OFF  # 바인딩 로그 끔
-    org.springframework: OFF  # 스프링 로그도 완전히 끔
+    root: info  # 전체 로그 끔
+#    org.hibernate: OFF  # Hibernate 전체 끔
+#    org.hibernate.SQL: OFF  # SQL 로그 끔
+#    org.hibernate.type.descriptor.sql.BasicBinder: OFF  # 바인딩 로그 끔
+##    org.springframework: OFF  # 스프링 로그도 완전히 끔

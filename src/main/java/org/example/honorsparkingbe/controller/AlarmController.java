@@ -1,154 +1,157 @@
 package org.example.honorsparkingbe.controller;
 
-import org.example.honorsparkingbe.security.util.SecurityUtil;
-import org.example.honorsparkingbe.service.AlarmService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.*;
-
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.example.honorsparkingbe.security.util.SecurityUtil;
+import org.example.honorsparkingbe.service.AlarmService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1")
 public class AlarmController {
 
-    private final AlarmService alarmService;
+  private final AlarmService alarmService;
 
-    public AlarmController(AlarmService alarmService) {
-        this.alarmService = alarmService;
+  public AlarmController(AlarmService alarmService) {
+    this.alarmService = alarmService;
+  }
+
+  /**
+   * 회원 알람 불러오기 (현재 로그인한 사용자) GET /api/v1/alarmAll
+   *
+   * @param category
+   * @param page
+   * @param size
+   * @return
+   */
+  @GetMapping("/alarmAll")
+  public ResponseEntity<Map<String, Object>> getAlarms(
+      @RequestParam(required = false) String category,
+      @RequestParam(defaultValue = "1") int page,
+      @RequestParam(defaultValue = "20") int size) {
+
+    try {
+      // SecurityUtil 사용하도록 변경
+      // Controller에서도 memberId == null 체크를 넣는 건 방어적 코딩 + 명확한 API 에러 처리 차원에서 추천된다고 합니다.
+      Long memberId = SecurityUtil.getCurrentUserId();
+      if (memberId == null) {
+        return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
+      }
+
+      // JPA 에서는 page 0부터 시작하므로
+      int adjustedPage = Math.max(page - 1, 0); // 음수 방지
+
+      Map<String, Object> response = alarmService.getAlarms(memberId, category, adjustedPage, size);
+
+      // Pagination 값 조정
+      Map<String, Object> pagination = new HashMap<>(
+          (Map<String, Object>) response.get("pagination"));
+      pagination.put("currentPage", (int) pagination.get("currentPage") + 1);
+
+      response = new HashMap<>(response);
+      response.put("pagination", pagination);
+
+      return ResponseEntity.ok(response);
+    } catch (IllegalArgumentException e) { // 잘못된 category 값 등 처리
+      return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
     }
+  }
 
-    /**
-     * 회원 알람 불러오기 (현재 로그인한 사용자)
-     * GET /api/v1/alarmAll
-     * @param category
-     * @param page
-     * @param size
-     * @return
-     */
-    @GetMapping("/alarmAll")
-    public ResponseEntity<Map<String, Object>> getAlarms(
-            @RequestParam(required = false) String category,
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "20") int size) {
+  /**
+   * 읽지 않은 알림이 있는지 확인 GET /api/v1/alarmUnread
+   *
+   * @return
+   */
+  @GetMapping("/alarmUnread")
+  public ResponseEntity<Map<String, Object>> getUnreadAlarms() {
+    try {
+      // Long memberId = getCurrentMemberId(); // 시현씨가 따로 구현한 걸로 OAuth2 실패(SecurityUtil 사용할 것)
+      Long memberId = SecurityUtil.getCurrentUserId();
 
-        try {
-            // SecurityUtil 사용하도록 변경
-            // Controller에서도 memberId == null 체크를 넣는 건 방어적 코딩 + 명확한 API 에러 처리 차원에서 추천된다고 합니다.
-            Long memberId = SecurityUtil.getCurrentUserId();
-            if (memberId == null) {
-                return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
-            }
+      if (memberId == null) {
+        return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
+      }
 
-            // JPA 에서는 page 0부터 시작하므로
-            int adjustedPage = Math.max(page - 1, 0); // 음수 방지
-
-            Map<String, Object> response = alarmService.getAlarms(memberId, category, adjustedPage, size);
-
-            // Pagination 값 조정
-            Map<String, Object> pagination = new HashMap<>((Map<String, Object>) response.get("pagination"));
-            pagination.put("currentPage", (int) pagination.get("currentPage") + 1);
-
-            response = new HashMap<>(response);
-            response.put("pagination", pagination);
-
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) { // 잘못된 category 값 등 처리
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+      boolean hasUnread = alarmService.hasUnreadAlarms(memberId);
+      return ResponseEntity.ok(Map.of("hasUnread", hasUnread));
+    } catch (Exception e) {
+      return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
     }
+  }
 
-    /**
-     * 읽지 않은 알림이 있는지 확인
-     * GET /api/v1/alarmUnread
-     * @return
-     */
-    @GetMapping("/alarmUnread")
-    public ResponseEntity<Map<String, Object>> getUnreadAlarms() {
-        try{
-            // Long memberId = getCurrentMemberId(); // 시현씨가 따로 구현한 걸로 OAuth2 실패(SecurityUtil 사용할 것)
-            Long memberId= SecurityUtil.getCurrentUserId();
 
-            if (memberId == null) {
-                return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
-            }
+  /**
+   * 회원 알람 읽기 PUT /api/v1/alarm
+   *
+   * @param requestBody
+   * @return
+   */
+  @PutMapping("/alarm")
+  public ResponseEntity<Map<String, Object>> updateAlarmsToRead(
+      @RequestBody Map<String, List<Long>> requestBody) {
+    // 요청에서 alarmIDList 추출
+    List<Long> alarmIDList = requestBody.get("alarmIDList");
 
-            boolean hasUnread= alarmService.hasUnreadAlarms(memberId);
-            return ResponseEntity.ok(Map.of("hasUnread", hasUnread));
-        }catch (Exception e){
-            return ResponseEntity.status(500).body(Map.of("error", e.getMessage()));
-        }
+    try {
+      // 서비스 호출
+      Map<String, Object> response = alarmService.updateAlarmsToRead(alarmIDList);
+
+      return ResponseEntity.ok(response);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
     }
+  }
 
+  /**
+   * 알람 선택 삭제 DELETE /api/v1/alarm
+   *
+   * @param requestBody
+   * @return
+   */
+  @DeleteMapping("/alarm")
+  public ResponseEntity<Map<String, Object>> deleteAlarms(
+      @RequestBody Map<String, List<Long>> requestBody) {
+    // 요청에서 alarmIDList 추출
+    List<Long> alarmIDList = requestBody.get("alarmIDList");
 
-    /**
-     * 회원 알람 읽기
-     * PUT /api/v1/alarm
-     * @param requestBody
-     * @return
-     */
-    @PutMapping("/alarm")
-    public ResponseEntity<Map<String, Object>> updateAlarmsToRead(@RequestBody Map<String, List<Long>> requestBody) {
-        // 요청에서 alarmIDList 추출
-        List<Long> alarmIDList = requestBody.get("alarmIDList");
-
-        try {
-            // 서비스 호출
-            Map<String, Object> response = alarmService.updateAlarmsToRead(alarmIDList);
-
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+    try {
+      Map<String, Object> response = alarmService.deleteAlarms(alarmIDList);
+      return ResponseEntity.ok(response);
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
     }
+  }
 
-    /**
-     * 알람 선택 삭제
-     * DELETE /api/v1/alarm
-     * @param requestBody
-     * @return
-     */
-    @DeleteMapping("/alarm")
-    public ResponseEntity<Map<String, Object>> deleteAlarms(@RequestBody Map<String, List<Long>> requestBody) {
-        // 요청에서 alarmIDList 추출
-        List<Long> alarmIDList = requestBody.get("alarmIDList");
+  /**
+   * 알람 전체 삭제 (현재 로그인한 사용자) DELETE /api/v1/alarm/all
+   *
+   * @return
+   */
+  @DeleteMapping("/alarm/all")
+  public ResponseEntity<Map<String, Object>> deleteAllAlarms() {
+    try {
+      // SecurityUtil 사용하도록 변경
+      Long memberId = SecurityUtil.getCurrentUserId();
+      if (memberId == null) {
+        return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
+      }
 
-        try {
-            Map<String, Object> response = alarmService.deleteAlarms(alarmIDList);
-            return ResponseEntity.ok(response);
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
+      Map<String, Object> response = alarmService.deleteAllAlarms(memberId);
+      return ResponseEntity.ok(response);
+    } catch (IllegalStateException e) {  // 인증되지 않은 경우 예외 처리
+      return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
+    } catch (IllegalArgumentException e) {
+      return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
     }
-
-    /**
-     * 알람 전체 삭제 (현재 로그인한 사용자)
-     * DELETE /api/v1/alarm/all
-     * @return
-     */
-    @DeleteMapping("/alarm/all")
-    public ResponseEntity<Map<String, Object>> deleteAllAlarms() {
-        try {
-            // SecurityUtil 사용하도록 변경
-            Long memberId = SecurityUtil.getCurrentUserId();
-            if (memberId == null) {
-                return ResponseEntity.status(401).body(Map.of("error", "로그인 필요"));
-            }
-
-            Map<String, Object> response = alarmService.deleteAllAlarms(memberId);
-            return ResponseEntity.ok(response);
-        } catch (IllegalStateException e) {  // 인증되지 않은 경우 예외 처리
-            return ResponseEntity.status(401).body(Map.of("error", e.getMessage()));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(Map.of("error", e.getMessage()));
-        }
-    }
+  }
 
 //    /**
 //     * 현재 로그인한 사용자의 memberId 가져오기

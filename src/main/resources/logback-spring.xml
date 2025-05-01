@@ -5,15 +5,16 @@
   <property name="LOG_PATTERN"
     value="[%d{yyyy-MM-dd HH:mm:ss}:%-4relative] %green([%thread]) %highlight(%-5level) %boldWhite([%C.%M:%yellow(%L)]) - %msg%n"/>
 
-  <springProfile name="performanceTest">
-    <root level="OFF"/>
-    <logger name="org.hibernate" level="OFF"/>
-    <logger name="org.hibernate.SQL" level="OFF"/>
-    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="OFF"/>
-    <logger name="org.springframework" level="OFF"/>
-  </springProfile>
+  <!--  <springProfile name="performanceTest">-->
+  <!--    <root level="DEBUG"/>-->
+  <!--    <logger name="org.hibernate" level="OFF"/>-->
+  <!--    <logger name="org.hibernate.SQL" level="OFF"/>-->
+  <!--    <logger name="org.hibernate.type.descriptor.sql.BasicBinder" level="OFF"/>-->
+  <!--    &lt;!&ndash;    <logger name="org.springframework" level="OFF"/>&ndash;&gt;-->
+  <!--  </springProfile>-->
 
-  <springProfile name="!performanceTest &amp; !prod">
+  <!--  <springProfile name="!performanceTest &amp; !prod">-->
+  <springProfile name="!prod">
     <include resource="console-appender.xml"/>
 
     <root level="INFO">

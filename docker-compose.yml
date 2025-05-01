@@ -34,7 +34,6 @@ services:
     image: gyural/honors-parking-buildx:latest
     #    platform: linux/amd64
     platform: linux/arm64
-
     ports:
       - "8080:8080"
     environment:
@@ -52,4 +51,8 @@ volumes:
 
 networks:
   my-network:
+<<<<<<< HEAD
     driver: bridge
+=======
+    driver: bridge
+>>>>>>> 38ce04b (fix: 시스템 출력 주석처리 및 docker-compose 스크립트 안정성 추가)
