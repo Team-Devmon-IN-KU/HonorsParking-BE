@@ -1,14 +1,11 @@
 package org.example.honorsparkingbe.service;
 
-import java.time.LocalDateTime;
-import java.util.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 import lombok.RequiredArgsConstructor;
-import org.example.honorsparkingbe.domain.entity.*;
 import org.example.honorsparkingbe.domain.entity.CarEntity;
 import org.example.honorsparkingbe.domain.entity.MemberEntity;
 import org.example.honorsparkingbe.domain.entity.ParkingHistoryEntity;
@@ -22,7 +19,6 @@ import org.example.honorsparkingbe.dto.request.SyncInoutRequest;
 import org.example.honorsparkingbe.dto.request.SyncInoutRequest.Inout;
 import org.example.honorsparkingbe.dto.response.SyncInoutResponse;
 import org.example.honorsparkingbe.dto.response.SyncInoutResponse.ParkingEntry;
-import org.example.honorsparkingbe.repository.internal.*;
 import org.example.honorsparkingbe.repository.internal.CarRepository;
 import org.example.honorsparkingbe.repository.internal.MemberRepository;
 import org.example.honorsparkingbe.repository.internal.ParkingHistoryRepository;
@@ -37,13 +33,10 @@ import org.springframework.transaction.annotation.Transactional;
 public class SyncInoutService {
 
   private final ParkingHistoryRepository parkingHistoryRepository;
-
   private final CarRepository carRepository;
   private final ParkingZoneRepository parkingZoneRepository;
   private final MemberRepository memberRepository;
   private final PayRepository payRepository;
-  private final ExpoRepository expoRepository;
-  private final ExpoPushService expoPushService;
 
   private final RedisUtil redisUtil;
 
@@ -126,84 +119,21 @@ public class SyncInoutService {
     // 7. ParkingHistory를 저장 시도 하고 실패시에 에러를 던짐
     try {
       parkingHistoryRepository.bulkInsertAndUpdate(parkingHistoryEntities);
-      enqueueRedisNotification(filteredNewMemberInoutList, carNumberToMemberMap); // 카카오 알림용
-      enqueuePushNotifications(parkingHistoryEntities); // 아래 주석처리하고 추가한 부분 - expo 푸시 알림용
+      enqueueRedisNotification(filteredNewMemberInoutList, carNumberToMemberMap);
     } catch (Exception e) {
       System.out.println(e.getMessage());
       throw new RuntimeException("주차 기록 저장 중 오류 발생", e);
     }
 
-    // DB에 값이 잘 들어갔다면 실행
     return SyncInoutResponse.builder()
-            .ValidNonExitEntries(
-                    parkingHistoryEntities.stream()
-                            .map(parkingHistoryEntity ->
-                                    ParkingEntry.builder().id(parkingHistoryEntity.getId()).build())
-                            .collect(Collectors.toList())
-            )
-            .build();
-
-//    // -- 알림 전송의 상황판단(exitTime null 확인), 알맞은 정보 수집(userId, pushToken), 메시지 구성
-//    for (ParkingHistoryEntity entity : parkingHistoryEntities) {
-//      MemberEntity member = entity.getMemberEntity();
-//      String userId = member.getAuthId();  // expo push 토큰 조회용
-//
-//      LocalDateTime exitTime = entity.getExitTime();
-//
-//      Optional<ExpoEntity> expo = expoRepository.findByUserId(userId);
-//      if (expo.isEmpty()) continue;
-//      System.out.println("userId = " + userId +", expo = " + expo.get().getPushToken());
-//
-//      String pushToken = expo.get().getPushToken();
-//
-//      boolean isEntry = (exitTime == null);
-//      String title = isEntry ? "🚗 차량 입차" : "🚗 차량 출차";
-//      String body = member.getUserName() + "님 차량이 " + (isEntry ? "입차" : "출차") + "되었습니다.";
-//      System.out.println(title);
-//
-//      Map<String, Object> data = new HashMap<>();
-//      data.put("type", isEntry ? "entry" : "exit");
-//      data.put("carNumber", entity.getCarEntity().getCarNumber());
-//      data.put("timestamp", entity.getEntranceTime().toString());
-//      data.put("uri", "/parking");
-//
-//      expoPushService.sendPushNotification(pushToken, title, body, data);
-//    }
+        .ValidNonExitEntries(
+            parkingHistoryEntities.stream()
+                .map(parkingHistoryEntity ->
+                    ParkingEntry.builder().id(parkingHistoryEntity.getId()).build())
+                .collect(Collectors.toList())  // List<Long>으로 수집
+        )
+        .build();
   }
-
-  private void enqueuePushNotifications(List<ParkingHistoryEntity> parkingHistoryEntities) {
-    List<NotificationQueueItem> pushQueueItems = new ArrayList<>();
-
-    for (ParkingHistoryEntity entity : parkingHistoryEntities) {
-      MemberEntity member = entity.getMemberEntity();
-      String userId = member.getAuthId();
-
-      // expo 토큰이 있는지 확인(여러 기기 처리를 위해 List로 변경)
-      List<ExpoEntity> expoList = expoRepository.findAllByUserId(userId);
-      if (expoList.isEmpty()) continue;
-
-
-      // 츨차시간 여부를 확인하여 입차, 출차 결정
-      boolean isEntry = entity.getExitTime() == null;
-      String title = isEntry ? "🚗 차량 입차" : "🚗 차량 출차";
-      String body = member.getUserName() + "님 차량이 " + (isEntry ? "입차" : "출차") + "되었습니다.";
-
-      for (ExpoEntity expoEntity : expoList) {
-        pushQueueItems.add(NotificationQueueItem.builder()
-                .notiChannel(NotiChannel.PUSH)
-                .notiEventType(isEntry ? NotiEventType.ENTRY : NotiEventType.EXIT)
-                .carNumber(entity.getCarEntity().getCarNumber())
-                .entranceTime(entity.getEntranceTime())
-                .pushToken(expoEntity.getPushToken())
-                .notiTitle(title)
-                .notiBody(body)
-                .retryCount(0)
-                .build());
-        }
-      }
-    redisUtil.notiEnqueueAll(pushQueueItems);
-  }
-
 
   /**
    * @param filteredNewMemberInoutList
@@ -255,8 +185,6 @@ public class SyncInoutService {
               .build();
         })
         .collect(Collectors.toList()); // ParkingHistoryEntity 리스트로 반환
-
-
   }
 
   /**
@@ -331,6 +259,8 @@ public class SyncInoutService {
               .retryCount(0)
               .build()
       );
+
+
     }
 
     redisUtil.notiEnqueueAll(newNotificationQueueItems);

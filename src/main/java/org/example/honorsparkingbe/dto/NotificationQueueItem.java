@@ -21,13 +21,9 @@ public class NotificationQueueItem {
   NotiChannel notiChannel;
   NotiEventType notiEventType;
 
+  String phoneNumber;
   String carNumber;
   LocalDateTime entranceTime;
-
-  String phoneNumber; // only kakao
-  String notiTitle; // only push
-  String notiBody; // only push
-  String pushToken; // only push
 
   Integer retryCount;
 }

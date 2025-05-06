@@ -1,12 +1,8 @@
 package org.example.honorsparkingbe.util.squeduler;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.logging.Logger;
 import lombok.RequiredArgsConstructor;
-import org.example.honorsparkingbe.domain.enums.NotiEventType;
 import org.example.honorsparkingbe.dto.NotificationQueueItem;
-import org.example.honorsparkingbe.service.ExpoPushService;
 import org.example.honorsparkingbe.service.KakaoNotificationTalkService;
 import org.example.honorsparkingbe.util.RedisUtil;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,8 +15,6 @@ public class RedisNotificationWorker {
   private final RedisUtil redisUtil;
   private final KakaoNotificationTalkService kakaoNotificationTalkService;
   private final Logger logger = Logger.getLogger(RedisNotificationWorker.class.getName());
-  private final ExpoPushService expoPushService;
-
 
   static Integer BATCH_SIZE = 1000;
 
@@ -62,16 +56,6 @@ public class RedisNotificationWorker {
   private void handlePushNotification(NotificationQueueItem item) {
     // TODO: PUSH 알람 전송 로직
     logger.info("푸시 알람 처리 로직 추가 필요: " + item);
-
-    Map<String, Object> data = new HashMap<>();
-    data.put("type", item.getNotiEventType() == NotiEventType.ENTRY ? "entry" : "exit");
-    data.put("carNumber", item.getCarNumber());
-    data.put("timestamp", item.getEntranceTime().toString());
-    data.put("uri", "/parking");
-
-    expoPushService.sendPushNotification(
-            item.getPushToken(), item.getNotiTitle(), item.getNotiBody(), data
-    );
   }
 
   private void handleFailure(NotificationQueueItem item, Exception e) {
@@ -87,4 +71,5 @@ public class RedisNotificationWorker {
       logger.warning("예외 메시지: " + e.getMessage());
     }
   }
+
 }
