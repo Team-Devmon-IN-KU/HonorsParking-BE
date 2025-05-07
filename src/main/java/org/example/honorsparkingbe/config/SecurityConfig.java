@@ -17,6 +17,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.web.HttpSessionOAuth2AuthorizationRequestRepository;
+import org.springframework.security.oauth2.core.endpoint.OAuth2AuthorizationRequest;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
@@ -103,6 +105,9 @@ public class SecurityConfig {
 
         .oauth2Login((oauth2) -> oauth2
             .loginPage("/login")
+                .authorizationEndpoint(endpoint ->  // !!!!!!!!!!!!!!! 추가함 !!!!!!!!!!!!!!!
+                        endpoint.authorizationRequestRepository(authorizationRequestRepository())
+                )
             //.defaultSuccessUrl("/api/v1/session/info", true) // 소셜 로그인 성공 후 이동 경로
             .successHandler(new CustomOAuth2LoginSuccessHandler()) // OAuth2 성공 핸들러 등록 (json 반환을 위해)
                 .failureHandler((request, response, exception) -> {     // 실패 핸들러 추가!
@@ -149,6 +154,11 @@ public class SecurityConfig {
 //                );
 
     return http.build();
+  }
+
+  @Bean
+  public HttpSessionOAuth2AuthorizationRequestRepository authorizationRequestRepository() {
+    return new HttpSessionOAuth2AuthorizationRequestRepository(); // !!!!!!!!!!!!!!! 수정함 !!!!!!!!!!!!!!!
   }
 
   /**

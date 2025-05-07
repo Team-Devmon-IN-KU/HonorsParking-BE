@@ -3,6 +3,7 @@ package org.example.honorsparkingbe.security;
  * OAuth2 성공 핸들러 (리다이렉트만 수행)
  */
 
+import jakarta.servlet.http.HttpSession;
 import org.example.honorsparkingbe.dto.CustomOAuth2User;
 import org.example.honorsparkingbe.dto.OAuth2Response;
 import org.springframework.security.core.Authentication;
@@ -22,11 +23,12 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
         String role= user.getAuthorities().iterator().next().getAuthority();
 
         String sessionId = request.getSession().getId();
+        System.out.println(sessionId);
         // 보안 로직 추가할 것
 
-
         if("ROLE_USER".equals(role)){
-            response.sendRedirect("https://honorsparking-web.vercel.app");
+            response.sendRedirect("http://localhost:3000");
+            // response.sendRedirect("https://honorsparking-web.vercel.app");
         }else{
             response.sendRedirect("https://honorsparking-web.vercel.app?sessionId="+sessionId);
             // response.sendRedirect("https://honorsparking-web.vercel.app/currentRoleIs_ROLE_NONE?sessionId="+sessionId);
