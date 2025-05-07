@@ -105,6 +105,13 @@ public class SecurityConfig {
             .loginPage("/login")
             //.defaultSuccessUrl("/api/v1/session/info", true) // 소셜 로그인 성공 후 이동 경로
             .successHandler(new CustomOAuth2LoginSuccessHandler()) // OAuth2 성공 핸들러 등록 (json 반환을 위해)
+                .failureHandler((request, response, exception) -> {     // 실패 핸들러 추가!
+                  exception.printStackTrace(); // 콘솔에 에러 로그 출력
+
+                  response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                  response.setContentType("application/json;charset=UTF-8");
+                  response.getWriter().write("{\"message\": \"소셜 로그인 실패: " + exception.getMessage() + "\"}");
+                })
             .userInfoEndpoint((userInfoEndpointConfig) -> userInfoEndpointConfig
                 .userService(customOAuth2UserService)));
 
@@ -173,7 +180,7 @@ public class SecurityConfig {
     DefaultCookieSerializer serializer = new DefaultCookieSerializer();
     serializer.setCookieName("SESSION"); // 세션 쿠키 이름
     serializer.setCookiePath("/");
-    serializer.setUseSecureCookie(true); // HTTPS에서만 쿠키 전송 (http에서는 쿠키 전송이 안되므로 개발 환경에서는 false로 설정)
+    serializer.setUseSecureCookie(false); // HTTPS에서만 쿠키 전송 (http에서는 쿠키 전송이 안되므로 개발 환경에서는 false로 설정)
     serializer.setSameSite("None"); // 크로스 사이트 요청에서 쿠키 허용
     return serializer;
   }

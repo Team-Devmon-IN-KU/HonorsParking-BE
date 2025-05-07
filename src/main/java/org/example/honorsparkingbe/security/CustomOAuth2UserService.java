@@ -35,7 +35,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     String registrationId = userRequest.getClientRegistration().getRegistrationId();
     OAuth2Response oAuth2Response = null;
 
-    String role = "ROLE_NONE";
+    // String role = "ROLE_NONE";
+    String role = "ROLE_USER";
     Long memberId = null;
 
     // Provider마다 데이터를 주는 방식이 다르기에 다르게 처리(8강)
