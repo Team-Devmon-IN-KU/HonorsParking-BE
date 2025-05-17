@@ -6,6 +6,7 @@ src/main/resources/config/application.yml
 *.class
 *.jar
 *.war
+*.tar
 
 # IDE 관련 파일 제외
 *.iml
