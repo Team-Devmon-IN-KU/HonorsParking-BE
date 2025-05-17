@@ -4,7 +4,12 @@ package org.example.honorsparkingbe.config;
  * Spring Security 설정 클래스 - 접근 권한 설정, 로그인 로그아웃 및 세션 관리, CSRF 비활성화 등
  */
 
+import jakarta.servlet.FilterChain;
+import jakarta.servlet.ServletException;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
+import java.io.IOException;
 import java.util.List;
 import java.util.Set;
 import org.example.honorsparkingbe.security.ApiKeyAuthFilter;
@@ -12,8 +17,10 @@ import org.example.honorsparkingbe.security.CustomFormLoginSuccessHandler;
 import org.example.honorsparkingbe.security.CustomOAuth2LoginSuccessHandler;
 import org.example.honorsparkingbe.security.CustomOAuth2UserService;
 import org.example.honorsparkingbe.util.AesUtil;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -21,11 +28,13 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfToken;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.CookieSerializer;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.web.filter.OncePerRequestFilter;
 
 
 @Configuration
@@ -166,7 +175,12 @@ public class SecurityConfig {
     ));
     config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS")); // 허용할 HTTP 메서드 설정
     config.setAllowedHeaders(List.of("*")); // 모든 요청 헤더 허용
-    config.setExposedHeaders(List.of("Authorization", "Set-Cookie", "X-API-KEY"));
+    config.setExposedHeaders(List.of(
+            "Authorization",
+            "Set-Cookie",
+            "X-API-KEY",
+            "X-CSRF-TOKEN" // 추가
+    ));
 
     source.registerCorsConfiguration("/**", config);
     return source;
@@ -185,4 +199,26 @@ public class SecurityConfig {
     return serializer;
   }
 
+  /**
+   * CSRF용 커스텀 필터
+   * @return
+   */
+  @Bean
+  public FilterRegistrationBean<OncePerRequestFilter> csrfTokenResponseHeaderBindingFilter() {
+    OncePerRequestFilter filter = new OncePerRequestFilter() {
+      @Override
+      protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+              throws ServletException, IOException {
+        CsrfToken csrf = (CsrfToken) request.getAttribute(CsrfToken.class.getName());
+        if (csrf != null) {
+          response.setHeader("X-CSRF-TOKEN", csrf.getToken());
+        }
+        filterChain.doFilter(request, response);
+      }
+    };
+
+    FilterRegistrationBean<OncePerRequestFilter> registrationBean = new FilterRegistrationBean<>(filter);
+    registrationBean.setOrder(Ordered.HIGHEST_PRECEDENCE + 10); // 보안 필터 뒤쪽
+    return registrationBean;
+  }
 }

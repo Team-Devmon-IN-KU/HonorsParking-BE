@@ -26,25 +26,25 @@ services:
     networks:
       - my-network
 
-  backend:
-    container_name: honorsParking
-    depends_on:
-      - db
-      - redis
-    image: gyural/honors-parking-buildx:latest
-    #    platform: linux/amd64
-    platform: linux/arm64
-    ports:
-      - "8080:8080"
-    environment:
-      DB_URL: jdbc:mysql://db:3306/parking
-      DB_USERNAME: user
-      DB_PASSWORD: 1234
-      REDIS_HOST: redis
-      REDIS_PORT: 6379
-      SPRING_PROFILES_ACTIVE: performanceTest
-    networks:
-      - my-network
+#  backend:
+#    container_name: honorsParking
+#    depends_on:
+#      - db
+#      - redis
+#    image: gyural/honors-parking-buildx:latest
+#    #    platform: linux/amd64
+#    platform: linux/arm64
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      DB_URL: jdbc:mysql://db:3306/parking
+#      DB_USERNAME: user
+#      DB_PASSWORD: 1234
+#      REDIS_HOST: redis
+#      REDIS_PORT: 6379
+#      SPRING_PROFILES_ACTIVE: performanceTest
+#    networks:
+#      - my-network
 
 volumes:
   mysql-data:
