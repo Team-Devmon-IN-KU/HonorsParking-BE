@@ -26,9 +26,15 @@ public class RedisConfig {
   @Value("${spring.data.redis.host}")
   public String host;
 
+  @Value("${spring.data.redis.password}")
+  private String password;
+
+
   @Bean
   public RedisConnectionFactory redisConnectionFactory() {
-    return new LettuceConnectionFactory(new RedisStandaloneConfiguration(host, port));
+    RedisStandaloneConfiguration redisConfig = new RedisStandaloneConfiguration(host, port);
+    redisConfig.setPassword(password); // Redis 인증
+    return new LettuceConnectionFactory(redisConfig);
   }
 
   @Bean
@@ -36,6 +42,7 @@ public class RedisConfig {
       RedisConnectionFactory redisConnectionFactory) {
     RedisTemplate<String, Object> template = new RedisTemplate<>();
     template.setConnectionFactory(redisConnectionFactory);
+
     template.setKeySerializer(new StringRedisSerializer()); // Redis 키 직렬화
     template.setValueSerializer(new GenericJackson2JsonRedisSerializer()); // JSON 직렬화 사용
     // template.setValueSerializer(new JdkSerializationRedisSerializer()); // JDK 직렬화 사용.
