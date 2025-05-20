@@ -31,8 +31,8 @@ public class KakaoLocalSearchClient {
         .build();
   }
 
-  static String SEARCH_PATH = "search/keyword";
-  static String AuthorizationHeader = "AuthorizationHeader";
+  static String SEARCH_PATH = "/local/search/keyword";
+  static String AuthorizationHeader = "Authorization";
   private final Logger logger = LoggerFactory.getLogger(FavoriteParkingZoneService.class);
 
   /**
@@ -43,8 +43,10 @@ public class KakaoLocalSearchClient {
   public KakaoLocalClientResponse getLoocalsByKeyword(SearchLocalDTO dto) {
     URI uri = UriComponentsBuilder.fromUriString(baseUrl)
         .path(SEARCH_PATH)
+        .queryParam("size", "10")
         .queryParam("query", dto.getKeyword())
         .build(false) // 아직 encode 하지 않음
+        .encode()
         .toUri();
 
     UriComponentsBuilder builder = UriComponentsBuilder.fromUri(uri);
@@ -58,7 +60,7 @@ public class KakaoLocalSearchClient {
       builder.queryParam("page", dto.getPage() + 1); // Kakao API는 1-based
     }
 
-    URI finalUri = builder.build(true).toUri(); // 마지막에 encode 처리
+    URI finalUri = builder.build(true).encode().toUri(); // 마지막에 encode 처리
 
     logger.info("Kakao Local Search URI: {}", finalUri);
 

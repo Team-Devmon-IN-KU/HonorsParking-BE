@@ -68,9 +68,9 @@ public class KakaoLocalSearchClientTest {
           } else if ("testKeyword2".equals(query) && "127.77".equals(x) && "36.55".equals(y)
               && page == null) {
             return jsonResponse(responseFor("testKeyword2"));
-          } else if ("testKeyword3".equals(query) && "127.77".equals(x) && "36.55".equals(y)
+          } else if ("테스트 키워드3".equals(query) && "127.77".equals(x) && "36.55".equals(y)
               && "2".equals(page)) {
-            return jsonResponse(responseFor("testKeyword3"));
+            return jsonResponse(responseFor("테스트 키워드3"));
           } else {
             return new MockResponse().setResponseCode(404);
           }
@@ -158,7 +158,7 @@ public class KakaoLocalSearchClientTest {
     // Given
     String testKeyword1 = "testKeyword1"; // 기본 키워드 검색 (쿼리만 있는 경우)
     String testKeyword2 = "testKeyword2"; // 키워드 + 좌표 (x, y)
-    String testKeyword3 = "testKeyword3"; // 키워드 + 좌표 + 페이지 (x, y, page)
+    String testKeyword3 = "테스트 키워드3"; // 키워드 + 좌표 + 페이지 (x, y, page)
 
     SearchLocalDTO dto1 = SearchLocalDTO.builder()
         .keyword(testKeyword1)
